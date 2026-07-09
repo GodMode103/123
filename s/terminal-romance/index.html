@@ -1,0 +1,282 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIGHTSHIFT.LOG — letters recovered from a decommissioned mainframe</title>
+<meta name="description" content="Four letters between two night-shift operators, recovered from tape backups of a 1983 mainframe. An epistolary romance in green phosphor.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%23081008'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='%2333ff66' font-family='monospace'%3E%E2%9D%A4%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --phos:#33ff66; --phos-dim:#1d9940; --phos-faint:#0e4d20;
+    --tube:#050a05; --room:#0a0a0c;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    background:var(--room);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'VT323',monospace;
+    padding:clamp(.5rem,3vw,2.5rem);
+  }
+  /* the physical monitor */
+  .bezel{
+    width:min(880px,100%);
+    background:linear-gradient(145deg,#2a2a2e,#141416);
+    border-radius:26px;
+    padding:clamp(14px,3vw,30px);
+    box-shadow:0 40px 90px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.08);
+    position:relative;
+  }
+  .bezel::after{
+    content:"CATHODE  SYSTEMS  ·  MODEL 83-B";
+    position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+    font-family:'VT323',monospace;font-size:11px;letter-spacing:.35em;color:#5a5a60;
+  }
+  .tube{
+    position:relative;background:var(--tube);border-radius:14px;overflow:hidden;
+    height:min(72vh,620px);min-height:420px;
+    box-shadow:inset 0 0 80px rgba(0,0,0,.85);
+  }
+  /* curvature vignette + glass glare */
+  .tube::before{
+    content:"";position:absolute;inset:0;z-index:6;pointer-events:none;border-radius:14px;
+    background:
+      radial-gradient(ellipse 145% 130% at 50% 50%, transparent 62%, rgba(0,0,0,.55) 100%),
+      linear-gradient(115deg, rgba(255,255,255,.045) 0%, transparent 22%);
+  }
+  /* scanlines + aperture grille */
+  .tube::after{
+    content:"";position:absolute;inset:0;z-index:5;pointer-events:none;
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, rgba(255,0,80,.025) 0 1px, rgba(0,255,120,.025) 1px 2px, rgba(0,80,255,.025) 2px 3px);
+  }
+  .screen{
+    position:absolute;inset:0;padding:clamp(16px,3.5vw,34px);
+    overflow-y:auto;scrollbar-width:none;
+    color:var(--phos);
+    font-size:clamp(16px,2.4vw,21px);line-height:1.42;
+    text-shadow:0 0 6px rgba(51,255,102,.55), 0 0 22px rgba(51,255,102,.18);
+    animation:flicker 4.1s infinite;
+    white-space:pre-wrap;word-break:break-word;
+  }
+  .screen::-webkit-scrollbar{display:none}
+  @keyframes flicker{
+    0%,100%{opacity:1} 96.5%{opacity:1} 97%{opacity:.86} 97.5%{opacity:1} 98.2%{opacity:.93} 99%{opacity:1}
+  }
+  .dim{color:var(--phos-dim)}
+  .faint{color:var(--phos-faint)}
+  .hot{background:var(--phos);color:var(--tube);text-shadow:none;padding:0 .3em}
+  .cursor{display:inline-block;width:.62em;height:1.05em;background:var(--phos);
+    vertical-align:text-bottom;animation:blink 1s steps(1) infinite;
+    box-shadow:0 0 8px rgba(51,255,102,.8)}
+  @keyframes blink{50%{opacity:0}}
+  .menu-item{cursor:pointer;display:block;width:100%;text-align:left;
+    background:none;border:none;font:inherit;color:inherit;text-shadow:inherit;padding:0}
+  .menu-item:hover,.menu-item:focus-visible{background:rgba(51,255,102,.12);outline:none}
+  .menu-item:focus-visible{box-shadow:inset 2px 0 0 var(--phos)}
+  .statusbar{
+    display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+    width:min(880px,100%);margin-top:14px;
+    font-size:15px;letter-spacing:.12em;color:#6f6f76;
+  }
+  .statusbar a{color:#9a9aa2;text-decoration:none;border-bottom:1px dotted #55555c}
+  .statusbar a:hover{color:var(--phos);border-color:var(--phos)}
+  @media (prefers-reduced-motion: reduce){
+    .screen{animation:none}
+    .cursor{animation:none}
+  }
+</style>
+
+<div class="wrap" style="display:flex;flex-direction:column;align-items:center;width:100%">
+  <div class="bezel">
+    <div class="tube">
+      <div class="screen" id="screen" tabindex="0" aria-live="polite"
+           aria-label="Terminal screen. Letters type out; press any key or tap to skip typing."></div>
+    </div>
+  </div>
+  <div class="statusbar">
+    <span>NIGHTSHIFT.LOG · RECOVERED 2026 · FABLE 25 · SITE 03</span>
+    <span><a href="guide/">guide — how this was made</a> &nbsp;·&nbsp; <a href="../../">⌂ fable 25</a></span>
+  </div>
+</div>
+
+<script>
+(() => {
+  const screen = document.getElementById('screen');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let skip = false, busy = false;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  /* typing engine: variable cadence, punctuation pauses, skippable */
+  async function type(text, cls){
+    const span = document.createElement('span');
+    if (cls) span.className = cls;
+    screen.appendChild(span);
+    if (reduced || skip){ span.textContent = text; screen.scrollTop = screen.scrollHeight; return; }
+    for (const ch of text){
+      if (skip){ span.textContent = text; break; }
+      span.textContent += ch;
+      screen.scrollTop = screen.scrollHeight;
+      let d = 14 + Math.random()*26;
+      if (',;'.includes(ch)) d = 90;
+      if ('.?!'.includes(ch)) d = 170;
+      if (ch === '\n') d = 60;
+      await sleep(d);
+    }
+    screen.scrollTop = screen.scrollHeight;
+  }
+  const line = (t, cls) => type(t + '\n', cls);
+
+  function cursorOn(){
+    const c = document.createElement('span');
+    c.className = 'cursor'; c.id = 'cur';
+    screen.appendChild(c);
+  }
+  const cursorOff = () => document.getElementById('cur')?.remove();
+
+  const LETTERS = [
+    {
+      id:'MSG-0119', from:'R.VANCE', to:'M.OKAFOR', date:'83-02-11 03:12',
+      subj:'re: the tape drive again',
+      body:
+`M —
+
+Drive 4 jammed at 03:00, as it does, and while I waited for it
+to rewind I read your handover note for the third time. You
+write handover notes the way other people write postcards.
+"Backups green. Coffee machine grieving. Venus visible from
+the loading dock around 4 if you care about that sort of
+thing."
+
+I went to the loading dock at 4.
+
+I care about that sort of thing.
+
+— R.`
+    },
+    {
+      id:'MSG-0127', from:'M.OKAFOR', to:'R.VANCE', date:'83-02-14 02:47',
+      subj:'operator etiquette',
+      body:
+`R —
+
+You should know the day shift thinks these consoles are for
+batch jobs. Imagine their faces. Line printers running all
+night and somewhere in the queue, between payroll and the
+actuarial tables, this.
+
+I left you the good chair. I fixed the wheel. Nobody fixes
+the wheel for just anyone.
+
+Venus again on Thursday, they say. Clear skies.
+
+— M.
+
+PS: happy the-14th. I am told it is an occasion.`
+    },
+    {
+      id:'MSG-0141', from:'R.VANCE', to:'M.OKAFOR', date:'83-03-02 04:58',
+      subj:'shift change',
+      body:
+`M —
+
+They are moving me to days. Effective Monday. Kellerman says
+it is a promotion and I suppose the money agrees with him.
+
+I tried to be glad about it for one entire hour.
+
+Here is what I know at almost five in the morning: for eight
+months the best part of my life has been a fifteen-minute
+overlap. 23:45 to midnight. You arriving, me pretending the
+handover takes longer than it does.
+
+Have breakfast with me. In daylight. I hear they serve it in
+restaurants.
+
+— R.`
+    },
+    {
+      id:'MSG-0142', from:'M.OKAFOR', to:'R.VANCE', date:'83-03-02 05:31',
+      subj:'(never sent — found in DRAFTS)',
+      body:
+`R —
+
+Yes.
+
+Obviously yes. Yes since February, if we are being precise,
+and we are operators, so we are always being precise.
+
+I am writing this at the end of your last night shift and I
+can hear you two consoles over, typing something with a great
+deal of backspacing. I will not send this. I will just tell
+you at 07:00, at handover, out loud, like a person.
+
+Some messages you deliver by hand.
+
+— M.
+
+[ EOF — TAPE ARCHIVE NOTE, 2026: personnel records show
+  Okafor, M. and Vance, R. filed a joint change-of-address
+  form in November 1983. ]`
+    }
+  ];
+
+  async function boot(){
+    busy = true;                      /* block letter-opening until the menu exists */
+    await line('CATHODE SYSTEMS 83-B  ·  ROM 4.2', 'dim');
+    await line('640K OK', 'dim');
+    await line('MOUNTING TAPE ARCHIVE /BACKUP/1983 ......... OK', 'dim');
+    await line('');
+    await line('> RESTORE NIGHTSHIFT.LOG');
+    await line('4 MESSAGES RECOVERED. 1 FLAGGED: NEVER SENT.', 'dim');
+    await line('');
+    busy = false; skip = false;
+    menu();
+  }
+
+  function menu(){
+    cursorOff();
+    const intro = document.createElement('span');
+    intro.textContent = 'SELECT MESSAGE TO READ:\n\n';
+    screen.appendChild(intro);
+    LETTERS.forEach((L, i) => {
+      const b = document.createElement('button');
+      b.className = 'menu-item';
+      b.innerHTML = `  [${i+1}] ${L.id}  ${L.date}  ${L.from} → ${L.to}  <span class="dim">"${L.subj}"</span>\n`;
+      b.addEventListener('click', ev => { ev.stopPropagation(); open(i); });
+      screen.appendChild(b);
+    });
+    const hint = document.createElement('span');
+    hint.className = 'faint';
+    hint.textContent = '\n  keys 1-4 open a message · any key skips typing\n\n';
+    screen.appendChild(hint);
+    cursorOn();
+    screen.scrollTop = screen.scrollHeight;
+  }
+
+  async function open(i){
+    if (busy) return; busy = true; skip = false;
+    const L = LETTERS[i];
+    cursorOff();
+    await line('');
+    await line(`> TYPE ${L.id}`, 'dim');
+    await line('─'.repeat(34), 'faint');
+    await line(`FROM: ${L.from}   TO: ${L.to}   ${L.date}`, 'dim');
+    await line(`SUBJ: ${L.subj}`, 'dim');
+    await line('─'.repeat(34), 'faint');
+    await type(L.body + '\n\n');
+    await line('─'.repeat(34), 'faint');
+    busy = false; skip = false;
+    menu();
+  }
+
+  addEventListener('keydown', e => {
+    if (busy){ skip = true; return; }
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= LETTERS.length) open(n - 1);
+  });
+  screen.addEventListener('click', () => { if (busy) skip = true; });
+
+  boot();
+})();
+</script>

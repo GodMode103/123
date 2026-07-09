@@ -1,0 +1,54 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — THE BRUTAL POST</title>
+<meta name="description" content="How the Brutal Post was built: brutalist editorial design, hard grids, and one acid color.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ffe600'/%3E%3Ctext x='16' y='25' font-size='24' text-anchor='middle' fill='%23111' font-family='sans-serif' font-weight='900'%3EB%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#f2f2ef;--ink:#111;--acid:#ffe600;--blood:#e3262c}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);font-family:'Archivo',sans-serif;line-height:1.65}
+  main{max-width:740px;margin:0 auto;padding:4.5rem 1.5rem}
+  .kicker{font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;background:var(--ink);color:var(--acid);display:inline-block;padding:.35rem .8rem;margin-bottom:1.2rem}
+  h1{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(2.2rem,6vw,3.6rem);line-height:.95}
+  h2{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:1.35rem;margin:2.8rem 0 .9rem;border-top:4px solid var(--ink);padding-top:1.2rem}
+  p,li{font-size:.98rem;color:#2b2b2b}
+  ul{padding-left:1.2rem}
+  li{margin:.5rem 0}
+  code{font-family:'Space Mono',monospace;font-size:.85em;background:#e4e4df;padding:.1em .4em}
+  .pass{border-left:6px solid var(--acid);padding:.4rem 0 .4rem 1.1rem;margin:1.1rem 0;background:#fff}
+  .pass h3{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:1rem}
+  nav{font-family:'Space Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2.5rem}
+  nav a{color:var(--ink);background:var(--acid);padding:.25rem .6rem;text-decoration:none;font-weight:700}
+  nav a:hover{background:var(--ink);color:var(--acid)}
+</style>
+<main>
+  <nav><a href="../">← Back to the front page</a> &nbsp; <a href="../../../">⌂ Fable 25 hub</a></nav>
+  <p class="kicker">Fable 25 · Guide 04</p>
+  <h1>The Brutal Post</h1>
+  <p>A brutalist tabloid where the design argument and the editorial content are the same joke told twice. Every visual rule the site preaches — hard corners, hard offsets, one acid color, structure as style — is also what its satirical headlines are about.</p>
+
+  <h2>Design system</h2>
+  <ul>
+    <li><strong>Type:</strong> Anton (a single ultra-condensed weight, always uppercase) against Archivo body and Space Mono for all "print apparatus" — folios, kickers, tickers, stamps.</li>
+    <li><strong>Color discipline:</strong> paper <code>#f2f2ef</code>, ink <code>#111</code>, and exactly one acid <code>#ffe600</code> used as reward — plus a single red postage stamp as the lone breaking of its own rule (every manifesto needs one sin).</li>
+    <li><strong>The grid is visible:</strong> a 12-column CSS grid with 3px interior rules drawn by borders, cells spanning 8/4/6/4 — the layout IS the ornament. On mobile every cell drops to full-width and the vertical rules disappear.</li>
+    <li><strong>Hover as ink:</strong> whole story cells invert to black; index rows shove left-padding in 3 steps (<code>steps(3)</code>) so even the transition feels typeset, not eased.</li>
+    <li><strong>Outlined "POST":</strong> <code>-webkit-text-stroke</code> hollow type against solid — masthead contrast without a second color.</li>
+  </ul>
+
+  <h2>Details worth stealing</h2>
+  <ul>
+    <li>The ticker is content duplicated exactly once and translated −50% for a seamless infinite loop; it pauses on hover and is disabled entirely under <code>prefers-reduced-motion</code>.</li>
+    <li>The postage stamp hangs 1.6rem below the masthead border, rotated 6°, with a 4px hard shadow — misregistration as a design feature.</li>
+    <li>Faint oversized folio numbers (01–07) sit in each cell corner at 25% opacity, doing wayfinding and texture at once.</li>
+  </ul>
+
+  <h2>Iteration log — three passes</h2>
+  <div class="pass"><h3>Pass 1 — Build</h3><p>Masthead, ticker, seven-story board, manifesto strip, index table, footer.</p></div>
+  <div class="pass"><h3>Pass 2 — Fine-tooth comb</h3><p>Masthead overflowed at 360px (letter-spacing on 14vw type) — retuned clamp and removed tracking. Acid cell's hover left yellow text on yellow: added explicit hover color override. Ticker jumped at loop point — was duplicating with different whitespace; now built from one string concatenated twice. Row hover previously moved layout via margin (janky) — switched to padding with stepped timing.</p></div>
+  <div class="pass"><h3>Pass 3 — Complexify &amp; polish</h3><p>Added the red stamp (rotation + hard shadow), hollow-stroke masthead word, folio numbers, hover-pause on ticker, and the "In this issue" index to give the page a second texture register. Checked all contrast pairs (yellow only ever carries black text). Reduced motion: ticker static, steps removed.</p></div>
+
+  <h2>Files</h2>
+  <p>One self-contained <code>index.html</code>. No images, no JS beyond 8 lines for the ticker loop.</p>
+</main>
