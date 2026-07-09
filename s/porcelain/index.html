@@ -1,0 +1,243 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Porcelain &amp; Thumb — A Ceramics Studio</title>
+<meta name="description" content="Small-batch ceramics thrown by hand. Pick a glaze, watch it pour, join a workshop.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%23f3e7dc'/%3E%3Cpath d='M10 8h12l-2 6c3 2 3 8-4 8s-7-6-4-8z' fill='%23c96f4a'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f3e7dc; --cream-2:#eadbcc; --clay:#c96f4a; --clay-deep:#a34f2e;
+    --sage:#a8b8a0; --blush:#e3b7ab; --char:#4a3f38;
+    --glaze:#c96f4a; --glaze-hi:#e29873;
+    --pop:8px 8px 18px rgba(163,79,46,.18), -8px -8px 18px rgba(255,255,255,.85);
+    --dent:inset 6px 6px 12px rgba(163,79,46,.16), inset -6px -6px 12px rgba(255,255,255,.9);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  html{overflow-x:hidden}
+  body{
+    background:var(--cream);color:var(--char);
+    font-family:'Nunito',sans-serif;line-height:1.7;overflow-x:hidden;
+  }
+  ::selection{background:var(--clay);color:var(--cream)}
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:500}
+
+  /* floating clay blobs */
+  .blob{position:absolute;filter:blur(1px);opacity:.55;pointer-events:none;z-index:0;
+    animation:squish 14s ease-in-out infinite}
+  .blob.b1{width:280px;height:280px;background:var(--blush);top:-60px;right:-70px;animation-delay:-3s}
+  .blob.b2{width:180px;height:180px;background:var(--sage);bottom:10%;left:-60px;animation-delay:-8s}
+  .blob.b3{width:120px;height:120px;background:var(--cream-2);top:38%;right:12%;animation-delay:-5s}
+  @keyframes squish{
+    0%,100%{border-radius:58% 42% 51% 49%/48% 57% 43% 52%;transform:translateY(0) rotate(0)}
+    33%{border-radius:45% 55% 60% 40%/55% 45% 55% 45%;transform:translateY(-18px) rotate(4deg)}
+    66%{border-radius:52% 48% 44% 56%/42% 52% 48% 58%;transform:translateY(10px) rotate(-3deg)}
+  }
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 1.5rem;position:relative}
+
+  /* hero */
+  .hero{position:relative;padding:clamp(4rem,10vh,7rem) 0 clamp(3rem,7vh,5rem);overflow:hidden;margin:0 auto}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(2rem,6vw,4rem);align-items:center;position:relative;z-index:1}
+  @media(max-width:860px){.hero-grid{grid-template-columns:1fr}}
+  .eyebrow{display:inline-block;background:var(--cream);box-shadow:var(--dent);border-radius:999px;
+    padding:.5rem 1.3rem;font-size:.75rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--clay-deep);margin-bottom:1.6rem}
+  h1{font-size:clamp(2.6rem,6.5vw,4.6rem);line-height:1.04;letter-spacing:-.01em}
+  h1 em{font-style:italic;color:var(--clay)}
+  .hero p{margin-top:1.4rem;max-width:44ch;font-size:1.05rem;color:#6b5d53}
+  .btn-row{display:flex;gap:1rem;margin-top:2.2rem;flex-wrap:wrap}
+  .squish-btn{
+    border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;font-size:.95rem;
+    background:var(--clay);color:#fff;padding:1.05rem 2.2rem;border-radius:22px;
+    box-shadow:0 10px 24px rgba(163,79,46,.35), inset 0 -4px 0 rgba(0,0,0,.14), inset 0 2px 0 rgba(255,255,255,.25);
+    transition:transform .16s cubic-bezier(.34,1.56,.64,1), box-shadow .16s;
+    text-decoration:none;display:inline-block;
+  }
+  .squish-btn:hover{transform:translateY(-3px) scale(1.02)}
+  .squish-btn:active{transform:translateY(2px) scale(.96);box-shadow:0 4px 10px rgba(163,79,46,.3), inset 0 -2px 0 rgba(0,0,0,.14)}
+  .squish-btn.ghost{background:var(--cream);color:var(--clay-deep);box-shadow:var(--pop)}
+  .squish-btn:focus-visible{outline:3px solid var(--clay-deep);outline-offset:3px}
+
+  /* vase plinth */
+  .plinth{
+    background:var(--cream);border-radius:44px;box-shadow:var(--pop);
+    padding:clamp(1.6rem,4vw,2.8rem);text-align:center;position:relative;
+  }
+  .vase-stage{background:var(--cream);border-radius:32px;box-shadow:var(--dent);padding:2rem 1rem 1.4rem}
+  .vase-stage svg{width:min(230px,60%);height:auto;display:block;margin:0 auto;
+    filter:drop-shadow(0 18px 22px rgba(163,79,46,.25))}
+  .glaze-label{font-family:'Fraunces',serif;font-size:1.05rem;margin-top:1.2rem}
+  .glazes{display:flex;justify-content:center;gap:.9rem;margin-top:1.1rem;flex-wrap:wrap}
+  .glaze{
+    width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;
+    box-shadow:var(--pop);transition:transform .18s cubic-bezier(.34,1.56,.64,1);position:relative;
+  }
+  .glaze:hover{transform:scale(1.12)}
+  .glaze:active{transform:scale(.92)}
+  .glaze[aria-pressed="true"]{box-shadow:var(--dent);transform:scale(.94)}
+  .glaze[aria-pressed="true"]::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+  .glaze:focus-visible{outline:3px solid var(--char);outline-offset:3px}
+
+  /* sections */
+  section{position:relative;padding:clamp(3.2rem,8vh,5.5rem) 0}
+  h2{font-size:clamp(1.9rem,4.4vw,2.9rem);letter-spacing:-.01em}
+  .sub{color:#6b5d53;margin-top:.7rem;max-width:52ch}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;margin-top:2.6rem}
+  @media(max-width:860px){.cards{grid-template-columns:1fr}}
+  .card{
+    background:var(--cream);border-radius:34px;box-shadow:var(--pop);padding:2rem;
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .card:hover{transform:translateY(-7px) rotate(-.6deg)}
+  .card .icon{width:74px;height:74px;border-radius:26px;box-shadow:var(--dent);
+    display:grid;place-items:center;font-size:2rem;margin-bottom:1.3rem}
+  .card h3{font-size:1.3rem;margin-bottom:.6rem}
+  .card p{font-size:.92rem;color:#6b5d53}
+  .card .price{display:inline-block;margin-top:1.2rem;font-weight:700;color:var(--clay-deep);
+    background:var(--cream);box-shadow:var(--dent);border-radius:999px;padding:.4rem 1.1rem;font-size:.85rem}
+
+  /* process */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem;margin-top:2.6rem;counter-reset:step}
+  @media(max-width:860px){.steps{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.steps{grid-template-columns:1fr}}
+  .step{background:var(--cream);border-radius:28px;box-shadow:var(--dent);padding:1.7rem 1.4rem;counter-increment:step}
+  .step::before{
+    content:counter(step,decimal-leading-zero);font-family:'Fraunces',serif;font-size:2rem;color:var(--clay);
+    display:block;margin-bottom:.7rem;
+  }
+  .step h3{font-size:1.05rem;margin-bottom:.4rem}
+  .step p{font-size:.85rem;color:#6b5d53}
+
+  /* workshop band */
+  .band{
+    background:var(--clay);border-radius:44px;color:#fff;
+    padding:clamp(2.4rem,6vw,4rem);display:grid;grid-template-columns:1.3fr .7fr;gap:2rem;align-items:center;
+    box-shadow:0 24px 50px rgba(163,79,46,.35);
+  }
+  @media(max-width:860px){.band{grid-template-columns:1fr}}
+  .band h2{color:#fff}
+  .band p{color:rgba(255,255,255,.85);margin-top:.8rem;max-width:46ch}
+  .band .squish-btn{background:var(--cream);color:var(--clay-deep);justify-self:start}
+
+  footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;
+    padding:2.4rem 0 3rem;margin-top:2rem;font-size:.8rem;color:#8a7a6e}
+  footer a{color:var(--clay-deep);text-decoration:none;font-weight:700}
+  footer a:hover{text-decoration:underline}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    .blob{animation:none}
+    *,*::before,*::after{transition-duration:.01ms!important}
+  }
+</style>
+
+<div class="wrap hero">
+  <div class="blob b1" aria-hidden="true"></div>
+  <div class="blob b2" aria-hidden="true"></div>
+  <div class="blob b3" aria-hidden="true"></div>
+  <div class="hero-grid">
+    <div>
+      <span class="eyebrow">Small-batch ceramics · est. in a garage</span>
+      <h1>Everything here was <em>mud</em> last month</h1>
+      <p>We throw forty pieces a week on two wheels in a studio that smells like rain. Each one is signed, slightly imperfect, and entirely yours.</p>
+      <div class="btn-row">
+        <a class="squish-btn" href="#collection">Shop the kiln</a>
+        <a class="squish-btn ghost" href="#workshop">Join a workshop</a>
+      </div>
+    </div>
+    <div class="plinth">
+      <div class="vase-stage">
+        <svg viewBox="0 0 200 260" role="img" aria-label="A vase you can re-glaze using the color buttons below">
+          <defs>
+            <linearGradient id="glz" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="var(--glaze-hi)"/>
+              <stop offset=".45" stop-color="var(--glaze)"/>
+              <stop offset="1" stop-color="var(--glaze)"/>
+            </linearGradient>
+          </defs>
+          <path d="M78 18 h44 c2 14 -3 26 -10 34 c28 14 40 44 40 84 c0 62 -34 96 -52 96 s-52 -34 -52 -96 c0 -40 12 -70 40 -84 c-7 -8 -12 -20 -10 -34 z"
+                fill="url(#glz)"/>
+          <ellipse cx="100" cy="18" rx="22" ry="6" fill="var(--glaze)" opacity=".85"/>
+          <path d="M66 120 c0 -18 8 -38 22 -48" stroke="rgba(255,255,255,.5)" stroke-width="6" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="glaze-label">Glaze: <strong id="glaze-name">Terracotta</strong></p>
+      <div class="glazes" role="group" aria-label="Choose a glaze color">
+        <button class="glaze" aria-pressed="true"  style="background:#c96f4a" data-g="#c96f4a" data-h="#e29873" data-n="Terracotta" aria-label="Terracotta glaze"></button>
+        <button class="glaze" aria-pressed="false" style="background:#7f96b2" data-g="#7f96b2" data-h="#a9bdd4" data-n="Raincloud"  aria-label="Raincloud glaze"></button>
+        <button class="glaze" aria-pressed="false" style="background:#a8b8a0" data-g="#a8b8a0" data-h="#c8d5c0" data-n="Sage"       aria-label="Sage glaze"></button>
+        <button class="glaze" aria-pressed="false" style="background:#4a3f38" data-g="#4a3f38" data-h="#75655a" data-n="Charred"    aria-label="Charred glaze"></button>
+        <button class="glaze" aria-pressed="false" style="background:#e3b7ab" data-g="#e3b7ab" data-h="#f3d5cc" data-n="Blush"      aria-label="Blush glaze"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section class="wrap" id="collection">
+    <h2>This month's kiln</h2>
+    <p class="sub">Fired to cone 6, cooled for two days, photographed badly on purpose so the real thing can surprise you.</p>
+    <div class="cards">
+      <article class="card">
+        <div class="icon">🫖</div>
+        <h3>The Patient Teapot</h3>
+        <p>Pours slowly. We consider this a feature. Holds enough for exactly one good conversation.</p>
+        <span class="price">$88 · 4 left</span>
+      </article>
+      <article class="card">
+        <div class="icon">🥣</div>
+        <h3>Unreasonable Bowls</h3>
+        <p>Nested set of three, none of which match, all of which argue. Dishwasher-safe, dignity intact.</p>
+        <span class="price">$64 · set of 3</span>
+      </article>
+      <article class="card">
+        <div class="icon">🏺</div>
+        <h3>The Vase Above</h3>
+        <p>Yes, that one. Whatever glaze you picked, we probably have it — and if not, the kiln takes requests.</p>
+        <span class="price">$120 · made to order</span>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap" id="process">
+    <h2>Mud to shelf in four moves</h2>
+    <div class="steps">
+      <div class="step"><h3>Wedge</h3><p>Knock the air out of the clay. Also the ego. Both interfere with throwing.</p></div>
+      <div class="step"><h3>Throw</h3><p>Eight minutes at the wheel. Forty years to make those eight minutes look easy.</p></div>
+      <div class="step"><h3>Glaze</h3><p>Chemistry dressed as painting. The kiln has final approval on all colors.</p></div>
+      <div class="step"><h3>Fire</h3><p>1,222°C for twelve hours. What survives is stronger than your dishwasher's opinion.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap" id="workshop">
+    <div class="band">
+      <div>
+        <h2>Get mud on your hands</h2>
+        <p>Saturday workshops, six seats, all tools and aprons provided. You will make one wobbly bowl and feel unreasonably proud of it. This is guaranteed.</p>
+      </div>
+      <a class="squish-btn" href="#workshop" onclick="return false">Book a Saturday — $45</a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <span>Porcelain &amp; Thumb · Fable 25 · Site 05</span>
+  <span><a href="guide/">Guide — how this was made</a> &nbsp;·&nbsp; <a href="../../">⌂ Fable 25</a></span>
+</footer>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  const name = document.getElementById('glaze-name');
+  document.querySelectorAll('.glaze').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.glaze').forEach(x => x.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');
+      root.style.setProperty('--glaze', b.dataset.g);
+      root.style.setProperty('--glaze-hi', b.dataset.h);
+      name.textContent = b.dataset.n;
+    });
+  });
+})();
+</script>

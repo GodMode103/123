@@ -1,0 +1,272 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DEEP CURRENT — A Descent to the Bottom of the Sea</title>
+<meta name="description" content="Scroll to sink. A documentary descent from sunlit surface to the Challenger Deep, 10,935 meters down.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23021019'/%3E%3Cpath d='M4 12 Q10 8 16 12 T28 12' stroke='%235fd4d0' stroke-width='2' fill='none'/%3E%3Ccircle cx='22' cy='22' r='2' fill='%23aef2c3'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root{--foam:#eaf7f7;--teal:#5fd4d0;--bio:#aef2c3;--mono:'IBM Plex Mono',monospace}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:#04486b; /* JS interpolates this */
+    color:var(--foam);font-family:'Sora',sans-serif;font-weight:300;line-height:1.8;
+    overflow-x:hidden;transition:background 0s;
+  }
+  ::selection{background:var(--teal);color:#032}
+
+  #snow{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+
+  /* depth HUD */
+  .hud{
+    position:fixed;right:clamp(.8rem,3vw,2.2rem);top:50%;transform:translateY(-50%);
+    z-index:20;text-align:right;font-family:var(--mono);
+  }
+  .hud .m{font-size:clamp(1.1rem,2.6vw,1.7rem);color:var(--foam);font-weight:300}
+  .hud .m b{color:var(--teal);font-weight:400}
+  .hud .zone{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(234,247,247,.55);margin-top:.3rem}
+  .hud .gauge{width:3px;height:clamp(120px,24vh,220px);background:rgba(234,247,247,.15);margin:1rem 0 0 auto;position:relative;border-radius:2px}
+  .hud .gauge i{position:absolute;left:-2.5px;width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px var(--teal)}
+
+  .chapter{
+    min-height:100vh;display:flex;align-items:center;position:relative;z-index:2;
+    padding:6rem clamp(1.2rem,6vw,5rem);
+  }
+  .ch-inner{max-width:620px}
+  .depth-tag{font-family:var(--mono);font-size:.72rem;letter-spacing:.3em;color:var(--teal);text-transform:uppercase}
+  .chapter h2{font-weight:200;font-size:clamp(2rem,5.5vw,3.6rem);line-height:1.12;margin:.9rem 0 1.4rem;letter-spacing:-.01em}
+  .chapter h2 b{font-weight:600}
+  .chapter p{color:rgba(234,247,247,.82);font-size:clamp(.95rem,1.8vw,1.05rem);max-width:54ch}
+  .chapter .fact{
+    margin-top:1.8rem;border-left:2px solid var(--teal);padding:.4rem 0 .4rem 1.2rem;
+    font-family:var(--mono);font-size:.78rem;color:rgba(234,247,247,.6);max-width:48ch;
+  }
+
+  /* hero */
+  .hero{min-height:100vh;display:grid;place-items:center;text-align:center;position:relative;z-index:2;padding:2rem 1.2rem}
+  .hero h1{font-weight:200;font-size:clamp(2.6rem,9vw,6.4rem);letter-spacing:.06em;line-height:1.05}
+  .hero h1 b{font-weight:600;display:block;letter-spacing:.02em}
+  .hero .sub{margin-top:1.6rem;color:rgba(234,247,247,.75);font-size:clamp(.9rem,2vw,1.05rem)}
+  .hero .start{
+    display:inline-block;margin-top:3rem;font-family:var(--mono);font-size:.72rem;letter-spacing:.35em;
+    text-transform:uppercase;color:var(--teal);text-decoration:none;border:1px solid rgba(95,212,208,.4);
+    padding:.9rem 2rem;transition:background .3s,color .3s;
+  }
+  .hero .start:hover{background:var(--teal);color:#032c33}
+
+  /* creatures drift on parallax */
+  .drift{position:absolute;pointer-events:none;opacity:.6;will-change:transform}
+  .drift svg{display:block}
+
+  /* bioluminescent field */
+  .bio-dots span{
+    position:absolute;border-radius:50%;background:var(--bio);
+    box-shadow:0 0 12px 2px rgba(174,242,195,.65);
+    animation:pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:.95;transform:scale(1.15)}}
+
+  /* floor */
+  .floor{
+    min-height:110vh;display:flex;align-items:center;justify-content:center;text-align:center;
+    position:relative;z-index:2;padding:6rem 1.2rem 8rem;
+  }
+  .floor-inner{max-width:640px}
+  .floor .depth-tag{font-size:.8rem}
+  .floor h2{font-weight:200;font-size:clamp(2.2rem,7vw,4.4rem);margin:1rem 0 1.4rem}
+  .floor h2 b{font-weight:600}
+  .floor p{color:rgba(234,247,247,.78)}
+  .resurface{
+    display:inline-block;margin-top:3rem;font-family:var(--mono);font-size:.72rem;letter-spacing:.35em;
+    text-transform:uppercase;color:#032c33;background:var(--teal);text-decoration:none;padding:1rem 2.2rem;
+  }
+  .resurface:hover{background:var(--bio)}
+
+  footer{
+    position:relative;z-index:2;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;
+    padding:2rem clamp(1.2rem,6vw,5rem) 2.6rem;font-family:var(--mono);font-size:.68rem;
+    letter-spacing:.18em;text-transform:uppercase;color:rgba(234,247,247,.5);
+  }
+  footer a{color:rgba(234,247,247,.85);text-decoration:none;border-bottom:1px solid rgba(95,212,208,.4);padding-bottom:2px}
+  footer a:hover{color:var(--teal)}
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  }
+</style>
+
+<canvas id="snow" aria-hidden="true"></canvas>
+
+<div class="hud" aria-hidden="true">
+  <div class="m"><b id="depth">0</b> m</div>
+  <div class="zone" id="zone">Surface</div>
+  <div class="gauge"><i id="dot" style="top:0%"></i></div>
+</div>
+
+<header class="hero">
+  <div>
+    <p class="depth-tag">A vertical documentary · scroll to sink</p>
+    <h1>DEEP<b>CURRENT</b></h1>
+    <p class="sub">The average depth of the ocean is 3,682 meters.<br>You are about to pass it.</p>
+    <a class="start" href="#c1">Begin descent ↓</a>
+  </div>
+</header>
+
+<main>
+  <section class="chapter" id="c1" data-depth="200">
+    <div class="drift" data-speed="0.18" style="right:8%;top:18%">
+      <svg width="120" height="46" viewBox="0 0 120 46" fill="none" aria-hidden="true">
+        <path d="M8 24 Q34 4 62 22 Q84 36 112 24 Q90 44 58 34 Q26 26 8 24Z" fill="rgba(234,247,247,.28)"/>
+        <circle cx="98" cy="24" r="2.5" fill="#032c33"/>
+      </svg>
+    </div>
+    <div class="ch-inner">
+      <p class="depth-tag">−200 m · The Twilight Zone begins</p>
+      <h2>The last of the <b>sunlight</b> gives up here</h2>
+      <p>Photosynthesis ends at this line. Everything below either swims up to eat, waits for food to fall, or learns to make its own light. Ninety percent of the ocean lies beneath this sentence.</p>
+      <p class="fact">PRESSURE: 21 atmospheres — a submarine hull begins to matter.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="c2" data-depth="1000">
+    <div class="bio-dots" id="bio" aria-hidden="true"></div>
+    <div class="ch-inner">
+      <p class="depth-tag">−1,000 m · The Midnight Zone</p>
+      <h2>Where the animals <b>invented lanterns</b></h2>
+      <p>Bioluminescence is the most common form of communication on Earth — most of the planet's creatures live down here, speaking in flashes. The lights you see drifting past are how the dark says hello, threatens, courts, and lies.</p>
+      <p class="fact">76% of deep-sea species produce their own light. Evolution invented it at least 94 separate times.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="c3" data-depth="3800">
+    <div class="drift" data-speed="0.12" style="left:6%;top:24%">
+      <svg width="150" height="60" viewBox="0 0 150 60" fill="none" aria-hidden="true">
+        <path d="M10 30 Q40 10 75 26 T140 30" stroke="rgba(95,212,208,.35)" stroke-width="2" fill="none"/>
+        <path d="M10 38 Q45 20 80 34 T140 38" stroke="rgba(95,212,208,.18)" stroke-width="2" fill="none"/>
+      </svg>
+    </div>
+    <div class="ch-inner">
+      <p class="depth-tag">−3,800 m · The Abyssal Plain</p>
+      <h2>A famous ship <b>rests at this depth</b></h2>
+      <p>The Titanic sits in cold this absolute — about 1°C — under pressure that would crush a car into a drink can. Yet life carpets the seafloor: sea cucumbers, glass sponges, and bacteria eating the ship itself, half a ton of it a day.</p>
+      <p class="fact">MARINE SNOW: the dead falling from above — the only weather, and the only food economy, down here.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="c4" data-depth="6000">
+    <div class="ch-inner">
+      <p class="depth-tag">−6,000 m · The Hadal Zone</p>
+      <h2>Named after <b>Hades</b>, on purpose</h2>
+      <p>Only the trenches go deeper than this. Fish stop here — below ~8,400 m their cells can no longer hold shape against the pressure. What continues down is stranger: amphipods the size of house cats, and creatures we have photographed exactly once.</p>
+      <p class="fact">More people have walked on the Moon than have reached the deepest trench floor.</p>
+    </div>
+  </section>
+</main>
+
+<section class="floor" data-depth="10935">
+  <div class="floor-inner">
+    <p class="depth-tag">−10,935 m · Challenger Deep</p>
+    <h2>You are at the <b>bottom of the world</b></h2>
+    <p>If Everest were dropped into this trench, its summit would still be two kilometers underwater. The pressure here is 1,086 times the surface — and something is alive in every photograph we have ever taken of it.</p>
+    <a class="resurface" href="#top" onclick="scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return false">↑ Resurface</a>
+  </div>
+</section>
+
+<footer>
+  <span>DEEP CURRENT · FABLE 25 · SITE 09</span>
+  <span><a href="guide/">Guide — how this was made</a> &nbsp;·&nbsp; <a href="../../">⌂ Fable 25</a></span>
+</footer>
+
+<script>
+(() => {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- depth zones and background interpolation ---- */
+  const STOPS = [   /* scrollFrac, depth, color, zone */
+    [0.00,     0, [ 4, 92,132], 'Surface · Epipelagic'],
+    [0.18,   200, [ 3, 59, 92], 'Twilight · Mesopelagic'],
+    [0.42,  1000, [ 2, 28, 48], 'Midnight · Bathypelagic'],
+    [0.66,  3800, [ 2, 14, 26], 'Abyssal Plain'],
+    [0.85,  6000, [ 1,  8, 16], 'Hadal Zone'],
+    [1.00, 10935, [ 0,  3,  7], 'Challenger Deep'],
+  ];
+  const lerp = (a,b,t) => a + (b-a)*t;
+  const depthEl = document.getElementById('depth');
+  const zoneEl = document.getElementById('zone');
+  const dotEl = document.getElementById('dot');
+
+  function onScroll(){
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const f = max > 0 ? Math.min(1, scrollY / max) : 0;
+    let i = 0;
+    while (i < STOPS.length - 2 && f > STOPS[i+1][0]) i++;
+    const [f0,d0,c0] = STOPS[i], [f1,d1,c1,z1] = STOPS[i+1];
+    const t = Math.min(1, Math.max(0, (f - f0) / (f1 - f0)));
+    const r = Math.round(lerp(c0[0],c1[0],t));
+    const g = Math.round(lerp(c0[1],c1[1],t));
+    const b = Math.round(lerp(c0[2],c1[2],t));
+    document.body.style.background = `rgb(${r},${g},${b})`;
+    const depth = Math.round(lerp(d0,d1,t));
+    depthEl.textContent = depth.toLocaleString();
+    zoneEl.textContent = t > .5 ? z1 : STOPS[i][3];
+    dotEl.style.top = (f*100) + '%';
+
+    /* parallax drifts: bounded sway, no wrap snapping */
+    document.querySelectorAll('.drift').forEach(el => {
+      if (reduced) return;
+      const sp = parseFloat(el.dataset.speed || 0.15);
+      const y = Math.sin(scrollY * 0.0022) * 46 - scrollY * sp * 0.08;
+      const x = Math.sin(scrollY * 0.0013 + 2) * 24;
+      el.style.transform = `translate(${x}px, ${y}px)`;
+    });
+  }
+  addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  /* ---- bioluminescent dots ---- */
+  const bio = document.getElementById('bio');
+  for (let i = 0; i < 26; i++){
+    const s = document.createElement('span');
+    const size = 2 + Math.random()*5;
+    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*94}%;top:${Math.random()*90}%;animation-delay:${-Math.random()*4}s;animation-duration:${3+Math.random()*4}s`;
+    bio.appendChild(s);
+  }
+
+  /* ---- marine snow canvas ---- */
+  const canvas = document.getElementById('snow');
+  const ctx = canvas.getContext('2d');
+  let W, H, flakes = [];
+  function resize(){
+    W = canvas.width = innerWidth;
+    H = canvas.height = innerHeight;
+    flakes = Array.from({length: Math.min(90, W/12)}, () => ({
+      x: Math.random()*W, y: Math.random()*H,
+      r: .6 + Math.random()*1.8,
+      vy: .12 + Math.random()*.4,
+      vx: (Math.random()-.5)*.12,
+      a: .12 + Math.random()*.3
+    }));
+  }
+  addEventListener('resize', resize, {passive:true});
+  resize();
+
+  let raf;
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+    for (const f of flakes){
+      f.y += f.vy; f.x += f.vx + Math.sin(f.y*.01)*.08;
+      if (f.y > H+4){ f.y = -4; f.x = Math.random()*W; }
+      if (f.x < -4) f.x = W+4; if (f.x > W+4) f.x = -4;
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(234,247,247,${f.a})`;
+      ctx.fill();
+    }
+    raf = requestAnimationFrame(tick);
+  }
+  if (!reduced) tick();
+  document.addEventListener('visibilitychange', () => {
+    if (reduced) return;
+    if (document.hidden) cancelAnimationFrame(raf); else tick();
+  });
+})();
+</script>

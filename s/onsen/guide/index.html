@@ -1,0 +1,67 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — 山風 Yamakaze Onsen</title>
+<meta name="description" content="How the Onsen site was designed and built: concept, techniques, iteration log.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23b3402a'/%3E%3Ctext x='16' y='23' font-size='18' text-anchor='middle' fill='%23f5f1e8' font-family='serif'%3E山%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root{--washi:#f5f1e8;--ink:#1a1816;--soft:#4a453d;--stone:#8c8578;--verm:#b3402a}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--washi);color:var(--ink);font-family:'Zen Kaku Gothic New',sans-serif;font-weight:300;line-height:1.9}
+  main{max-width:760px;margin:0 auto;padding:5rem 1.5rem 4rem}
+  h1,h2{font-family:'Shippori Mincho',serif;font-weight:500;letter-spacing:.1em}
+  h1{font-size:clamp(1.8rem,5vw,2.6rem)}
+  .kicker{color:var(--verm);font-size:.75rem;letter-spacing:.4em;text-transform:uppercase;margin-bottom:1rem}
+  h2{font-size:1.25rem;margin:3rem 0 1rem;padding-top:2rem;border-top:1px solid rgba(26,24,22,.12)}
+  p,li{color:var(--soft);font-size:.95rem}
+  ul{padding-left:1.2rem;margin:.6rem 0}
+  li{margin:.5rem 0}
+  code{font-family:ui-monospace,monospace;font-size:.85em;background:rgba(26,24,22,.06);padding:.1em .4em;border-radius:4px}
+  .swatches{display:flex;gap:.5rem;margin:1rem 0;flex-wrap:wrap}
+  .sw{width:72px;height:44px;border-radius:4px;border:1px solid rgba(26,24,22,.12);font-size:.6rem;display:flex;align-items:flex-end;padding:.25rem;color:#fff;letter-spacing:.05em}
+  .pass{border-left:2px solid var(--verm);padding:.2rem 0 .2rem 1.2rem;margin:1.2rem 0}
+  .pass h3{font-family:'Shippori Mincho',serif;font-size:1rem;letter-spacing:.15em;margin-bottom:.4rem}
+  nav{font-size:.8rem;letter-spacing:.15em;margin-bottom:3rem}
+  nav a{color:var(--soft);text-decoration:none;border-bottom:1px solid rgba(26,24,22,.2);padding-bottom:2px}
+  nav a:hover{color:var(--verm);border-color:var(--verm)}
+</style>
+<main>
+  <nav><a href="../">← Back to the site</a> &nbsp;·&nbsp; <a href="../../../">⌂ Fable 25 hub</a></nav>
+  <p class="kicker">Fable 25 · Guide 01</p>
+  <h1>山風 Yamakaze — Mountain Onsen</h1>
+  <p>A ryokan site built on the aesthetic of <em>ma</em> (negative space) and sumi-e ink-wash painting. The design bet: no photography at all — the entire visual identity is generated in code, so the page feels like a painted scroll rather than a hotel brochure.</p>
+
+  <h2>Concept spine</h2>
+  <p>"The site is a hanging scroll." One continuous vertical reading, ink at the top thinning into paper, a red hanko seal as the only saturated element, and copy written as if by the innkeeper — declarative, unhurried, slightly austere.</p>
+
+  <h2>Palette &amp; type</h2>
+  <div class="swatches">
+    <div class="sw" style="background:#f5f1e8;color:#1a1816">#f5f1e8 washi</div>
+    <div class="sw" style="background:#1a1816">#1a1816 sumi</div>
+    <div class="sw" style="background:#b3402a">#b3402a hanko</div>
+    <div class="sw" style="background:#8c8578">#8c8578 stone</div>
+  </div>
+  <ul>
+    <li><strong>Shippori Mincho</strong> for display — a Japanese serif with genuine brush DNA.</li>
+    <li><strong>Zen Kaku Gothic New</strong> at weight 300 for body — airy, wide line-height (1.9) to slow the reading pace.</li>
+  </ul>
+
+  <h2>Signature techniques</h2>
+  <ul>
+    <li><strong>Generative ink-wash mountains:</strong> five layered ridgelines drawn on <code>&lt;canvas&gt;</code> from a tiny seeded value-noise function (~15 lines, no libraries). Each layer gets progressively darker ink and shorter amplitude — the classic atmospheric-perspective trick of sumi-e.</li>
+    <li><strong>Steam simulation:</strong> soft-blurred particles with sinusoidal drift and a sine-eased opacity envelope, rising from where the baths would be.</li>
+    <li><strong>Vertical typography:</strong> <code>writing-mode: vertical-rl</code> for the fixed poem rail and section margin-glosses — real CSS vertical text, not rotated hacks.</li>
+    <li><strong>Ink-fill CTA:</strong> the "Write to us" button fills with vermillion via a scaling pseudo-element — the seal being pressed.</li>
+  </ul>
+
+  <h2>Iteration log — three passes</h2>
+  <div class="pass"><h3>Pass 1 — Build</h3>
+    <p>Structure, canvas ridgelines, steam system, all six content blocks, vertical rail, hanko SVG.</p></div>
+  <div class="pass"><h3>Pass 2 — Fine-tooth comb</h3>
+    <p>Ridge noise was too jagged at 12px sampling — tightened to 6px steps with smoothstep interpolation. Steam opacity peaked too high (read as fog); capped at 0.10. Fixed hero text contrast where the third ridge crossed behind the romaji. Killed a horizontal overflow at 360px caused by the letter-spaced hero line (added <code>text-indent</code> compensation).</p></div>
+  <div class="pass"><h3>Pass 3 — Complexify &amp; polish</h3>
+    <p>Added the visibility-change pause so the canvas stops burning CPU in background tabs; added <code>prefers-reduced-motion</code> path (static painted ridges, no steam, no reveals); devicePixelRatio capped at 2; reveal animations gated behind a <code>.js</code> class so the page is fully readable with scripts disabled.</p></div>
+
+  <h2>Files</h2>
+  <p>One self-contained <code>index.html</code> — no build step, no dependencies beyond two Google Fonts.</p>
+</main>

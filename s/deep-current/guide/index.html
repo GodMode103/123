@@ -1,0 +1,53 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — DEEP CURRENT</title>
+<meta name="description" content="How Deep Current was built: scroll-mapped depth, color interpolation through ocean zones, marine snow.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23021019'/%3E%3Ccircle cx='22' cy='22' r='2' fill='%23aef2c3'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root{--deep:#021019;--foam:#eaf7f7;--teal:#5fd4d0;--bio:#aef2c3}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--deep);color:var(--foam);font-family:'Sora',sans-serif;font-weight:300;line-height:1.8}
+  main{max-width:730px;margin:0 auto;padding:4.5rem 1.5rem}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.35em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem}
+  h1{font-weight:200;font-size:clamp(1.9rem,5vw,2.8rem);line-height:1.15}
+  h1 b{font-weight:600}
+  h2{font-weight:400;font-size:1.25rem;margin:2.8rem 0 .9rem;padding-top:1.6rem;border-top:1px solid rgba(95,212,208,.25);color:var(--teal)}
+  p,li{font-size:.93rem;color:rgba(234,247,247,.8)}
+  ul{padding-left:1.2rem}
+  li{margin:.5rem 0}
+  code{font-family:'IBM Plex Mono',monospace;font-size:.85em;background:rgba(95,212,208,.12);padding:.1em .4em;border-radius:3px;color:var(--bio)}
+  .pass{border-left:2px solid var(--teal);padding:.2rem 0 .2rem 1.2rem;margin:1.2rem 0}
+  .pass h3{font-weight:400;font-size:1rem;color:var(--foam)}
+  nav{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:2.5rem}
+  nav a{color:rgba(234,247,247,.85);text-decoration:none;border-bottom:1px solid rgba(95,212,208,.4);padding-bottom:2px}
+  nav a:hover{color:var(--teal)}
+</style>
+<main>
+  <nav><a href="../">← Back to the descent</a> &nbsp;·&nbsp; <a href="../../../">⌂ Fable 25 hub</a></nav>
+  <p class="kicker">Fable 25 · Guide 09</p>
+  <h1>DEEP<b>CURRENT</b> — scroll as submersion</h1>
+  <p>A scrollytelling documentary where the scrollbar is a depth winch: page position maps linearly onto a 10,935-meter descent. The design goal was for every system on the page — color, HUD, particles, copy — to answer to one variable: how deep are you?</p>
+
+  <h2>One variable, four systems</h2>
+  <ul>
+    <li><strong>Background:</strong> six color stops keyed to real ocean zones (epipelagic through Challenger Deep), piecewise-interpolated in RGB per scroll frame. The page darkens from <code>rgb(4,92,132)</code> to near-black <code>rgb(0,3,7)</code> exactly as the sea does — most of the darkening happens early, because that is physically true.</li>
+    <li><strong>Depth HUD:</strong> a fixed instrument showing meters (interpolated between chapter depths, so the number always moves when you do), the named zone, and a glowing bead on a vertical gauge — your position in the water column.</li>
+    <li><strong>Marine snow:</strong> a full-viewport canvas of ~90 slow particles with sinusoidal sway, falling perpetually — the real phenomenon that feeds the deep. Count scales with viewport width; the loop pauses in hidden tabs.</li>
+    <li><strong>Parallax drifters:</strong> SVG creatures (a ray, current-lines) translating against scroll at 0.12–0.18× — enough to imply water without becoming a theme park.</li>
+  </ul>
+
+  <h2>The bioluminescence chapter</h2>
+  <p>At −1,000 m the page grows 26 pulsing lights, each a <code>span</code> with randomized size, position, delay, and duration on one shared keyframe — so the field never visibly repeats. Their box-shadows do the glowing; there is no canvas involvement, and reduced-motion freezes them at mid-opacity where they read as a static starfield.</p>
+
+  <h2>Editorial stance</h2>
+  <p>Copy is written as a nature documentary in second person, and every chapter carries one verifiable fact styled as an instrument readout (<code>.fact</code>, monospace, keel-line left border). The facts are the emotional payload; the design's job is to get out of their way and keep darkening.</p>
+
+  <h2>Iteration log — three passes</h2>
+  <div class="pass"><h3>Pass 1 — Build</h3><p>Depth mapping, color stops, HUD, five chapters + floor, marine snow, bio-dots, drifters.</p></div>
+  <div class="pass"><h3>Pass 2 — Fine-tooth comb</h3><p>Zone label originally switched exactly at stop boundaries and flickered mid-chapter — now flips at the midpoint of each segment. Depth number jumped from 0 straight to 200 (hero wasn't a stop): added the surface stop at scroll 0. Drift parallax accumulated off-screen after long scrolls: wrapped with modulo. The resurface link respected smooth-scroll even under reduced motion — fixed to check the media query.</p></div>
+  <div class="pass"><h3>Pass 3 — Complexify &amp; polish</h3><p>Gauge bead position tied to total progress; marine-snow density made responsive (<code>min(90, width/12)</code>); visibility-change pause; sway added to snowfall so it drifts rather than rains; pressure/fact lines added per chapter; final CTA inverts to bio-green on hover. Contrast checked at every zone color against foam text.</p></div>
+
+  <h2>Files</h2>
+  <p>One self-contained <code>index.html</code>. The ocean is one gradient, interpolated honestly.</p>
+</main>

@@ -1,0 +1,229 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>signalform — bureau for visual order</title>
+<meta name="description" content="A Swiss International Style design bureau. Grids, red, and the absence of decoration. Press G to see the grid.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23fff'/%3E%3Crect x='4' y='4' width='11' height='11' fill='%23e30613'/%3E%3Crect x='17' y='17' width='11' height='11' fill='%23111'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--w:#ffffff;--k:#111111;--r:#e30613;--g:#767676;--u:clamp(14px,2vw,24px)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--w);color:var(--k);
+    font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;
+    line-height:1.5;font-size:16px;overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--r);color:var(--w)}
+
+  .page{max-width:1200px;margin:0 auto;padding:0 var(--u);position:relative}
+
+  /* grid overlay */
+  #gridlay{
+    position:fixed;inset:0;z-index:90;pointer-events:none;opacity:0;transition:opacity .25s;
+  }
+  #gridlay.on{opacity:1}
+  #gridlay .cols{
+    max-width:1200px;height:100%;margin:0 auto;padding:0 var(--u);
+    display:grid;grid-template-columns:repeat(12,1fr);gap:var(--u);
+  }
+  #gridlay .col{background:rgba(227,6,19,.08);border-left:1px solid rgba(227,6,19,.25);border-right:1px solid rgba(227,6,19,.25)}
+  .gridbtn{
+    position:fixed;right:1rem;bottom:1rem;z-index:95;
+    font:700 11px/1 'Inter',sans-serif;letter-spacing:.14em;text-transform:uppercase;
+    background:var(--k);color:var(--w);border:none;padding:.75rem 1.1rem;cursor:pointer;
+  }
+  .gridbtn:hover{background:var(--r)}
+  .gridbtn:focus-visible{outline:2px solid var(--r);outline-offset:2px}
+
+  /* header */
+  header{border-bottom:2px solid var(--k)}
+  .head-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--u);padding:1.2rem 0;align-items:baseline}
+  .logo{grid-column:1/4;font-weight:900;font-size:1.15rem;letter-spacing:-.02em}
+  .logo i{font-style:normal;color:var(--r)}
+  .head-note{grid-column:4/9;font-size:.72rem;color:var(--g)}
+  .head-links{grid-column:9/13;text-align:right;font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase}
+  .head-links a{color:var(--k);text-decoration:none;margin-left:1.2rem}
+  .head-links a:hover{color:var(--r)}
+  @media(max-width:760px){
+    .logo{grid-column:1/13}.head-note{display:none}.head-links{grid-column:1/13;text-align:left;margin-top:.4rem}
+    .head-links a{margin-left:0;margin-right:1.2rem}
+  }
+
+  /* poster hero */
+  .poster{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--u);padding:clamp(3rem,9vh,7rem) 0 clamp(3rem,8vh,6rem);position:relative}
+  .poster h1{
+    grid-column:1/12;font-weight:900;letter-spacing:-.045em;line-height:.9;
+    font-size:clamp(3rem,10.5vw,8.8rem);
+  }
+  .poster h1 .l2{display:block;color:transparent;-webkit-text-stroke:2px var(--k)}
+  .poster h1 .l3{display:block}
+  .poster h1 .l3 b{color:var(--r);font-weight:900}
+  .poster .sq{grid-column:12/13;align-self:start;aspect-ratio:1;background:var(--r);margin-top:.8rem}
+  @media(max-width:760px){.poster .sq{display:none}}
+  .poster-foot{grid-column:1/13;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+    font-size:.72rem;color:var(--g);border-top:1px solid var(--k);padding-top:.8rem;margin-top:2.5rem}
+  .poster-foot b{color:var(--k);font-weight:700}
+
+  /* sections */
+  section{border-top:2px solid var(--k);padding:clamp(2.5rem,6vh,4.5rem) 0}
+  .sec{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--u)}
+  .sec-no{grid-column:1/3;font-weight:900;font-size:.8rem;letter-spacing:.1em}
+  .sec-no i{font-style:normal;color:var(--r)}
+  .sec-body{grid-column:3/13}
+  @media(max-width:760px){.sec-no{grid-column:1/13;margin-bottom:1rem}.sec-body{grid-column:1/13}}
+
+  /* work rows */
+  .work{border-top:1px solid #d8d8d8}
+  .work-row{
+    display:grid;grid-template-columns:repeat(10,1fr);gap:var(--u);align-items:baseline;
+    padding:1.15rem 0;border-bottom:1px solid #d8d8d8;text-decoration:none;color:var(--k);
+    transition:none;position:relative;
+  }
+  .work-row .yr{grid-column:1/2;font-size:.75rem;color:var(--g);font-variant-numeric:tabular-nums}
+  .work-row .nm{grid-column:2/7;font-weight:700;font-size:clamp(1.05rem,2.4vw,1.5rem);letter-spacing:-.02em}
+  .work-row .cat{grid-column:7/10;font-size:.75rem;color:var(--g)}
+  .work-row .arrow{grid-column:10/11;text-align:right;font-weight:900;color:var(--r);opacity:0;transform:translateX(-8px);transition:opacity .18s,transform .18s}
+  .work-row:hover{background:#f4f4f4}
+  .work-row:hover .arrow{opacity:1;transform:none}
+  @media(max-width:760px){
+    .work-row{grid-template-columns:repeat(4,1fr)}
+    .work-row .yr{grid-column:1/2}.work-row .nm{grid-column:1/5;order:-1}.work-row .cat{grid-column:2/4}.work-row .arrow{grid-column:4/5}
+  }
+
+  /* principles */
+  .princ{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--u)}
+  @media(max-width:760px){.princ{grid-template-columns:1fr}}
+  .p-card{border:1px solid var(--k);padding:1.6rem}
+  .p-card .n{font-weight:900;font-size:2.6rem;letter-spacing:-.04em;line-height:1}
+  .p-card .n.red{color:var(--r)}
+  .p-card h3{font-size:.95rem;font-weight:700;margin:1.2rem 0 .5rem;letter-spacing:-.01em}
+  .p-card p{font-size:.82rem;color:var(--g)}
+
+  /* colophon */
+  .colo{font-size:.8rem;color:var(--g);columns:2;column-gap:var(--u);max-width:70ch}
+  @media(max-width:760px){.colo{columns:1}}
+  .colo b{color:var(--k)}
+
+  footer{border-top:2px solid var(--k);padding:1.4rem 0 3rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;
+    font-size:.72rem;letter-spacing:.06em;color:var(--g)}
+  footer a{color:var(--k);text-decoration:none;font-weight:700}
+  footer a:hover{color:var(--r)}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{transition-duration:.01ms!important}
+  }
+</style>
+
+<div id="gridlay" aria-hidden="true"><div class="cols">
+  <div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div>
+  <div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div>
+  <div class="col"></div><div class="col"></div><div class="col"></div><div class="col"></div>
+</div></div>
+<button class="gridbtn" id="gbtn" aria-pressed="false" title="Toggle the 12-column grid overlay (or press G)">grid: off</button>
+
+<div class="page">
+  <header>
+    <div class="head-grid">
+      <div class="logo">signalform<i>.</i></div>
+      <div class="head-note">bureau for visual order · zürich / remote · working in the tradition of müller-brockmann, with fewer cigarettes</div>
+      <nav class="head-links">
+        <a href="#work">work</a><a href="#principles">principles</a><a href="guide/">guide</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="poster" role="img" aria-label="Poster headline: order is the message">
+      <h1>
+        <span class="l1">order</span>
+        <span class="l2">is the</span>
+        <span class="l3"><b>message</b>&nbsp;—</span>
+      </h1>
+      <div class="sq" aria-hidden="true"></div>
+      <div class="poster-foot">
+        <span><b>signalform</b> · founded 1996 · four designers, one grid</span>
+        <span>press <b>G</b> to see the structure</span>
+        <span><b>12</b> columns · <b>1</b> red · <b>0</b> decorations</span>
+      </div>
+    </div>
+
+    <section id="work">
+      <div class="sec">
+        <div class="sec-no">01<i>/</i>03 — selected work</div>
+        <div class="sec-body">
+          <div class="work">
+            <a class="work-row" href="#work" onclick="return false">
+              <span class="yr">2026</span><span class="nm">Kantonsbibliothek wayfinding</span><span class="cat">signage · 4 floors · 0 arrows wasted</span><span class="arrow">→</span>
+            </a>
+            <a class="work-row" href="#work" onclick="return false">
+              <span class="yr">2025</span><span class="nm">Tonhalle season programme</span><span class="cat">print · 96 pages · Akzidenz only</span><span class="arrow">→</span>
+            </a>
+            <a class="work-row" href="#work" onclick="return false">
+              <span class="yr">2025</span><span class="nm">Federal timetable, unasked</span><span class="cat">self-initiated · they used it anyway</span><span class="arrow">→</span>
+            </a>
+            <a class="work-row" href="#work" onclick="return false">
+              <span class="yr">2024</span><span class="nm">Pharma identity, de-branded</span><span class="cat">identity · we removed 11 gradients</span><span class="arrow">→</span>
+            </a>
+            <a class="work-row" href="#work" onclick="return false">
+              <span class="yr">2023</span><span class="nm">Airport pictogram audit</span><span class="cat">systems · 212 icons · 1 survived</span><span class="arrow">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="principles">
+      <div class="sec">
+        <div class="sec-no">02<i>/</i>03 — principles</div>
+        <div class="sec-body">
+          <div class="princ">
+            <div class="p-card"><div class="n red">1</div><h3>The grid is not a cage</h3><p>It is a promise. Every element knows where it lives, so the reader never has to ask.</p></div>
+            <div class="p-card"><div class="n">2</div><h3>Red is a budget</h3><p>One accent, spent like money. If everything is emphasized, the page is shouting into a pillow.</p></div>
+            <div class="p-card"><div class="n">3</div><h3>Asymmetry is honesty</h3><p>Centering is what you do when you have not decided. We decide. Flush left, ragged right, done.</p></div>
+            <div class="p-card"><div class="n">4</div><h3>Type is the image</h3><p>A well-set headline needs no illustration. This site contains no photographs and misses none.</p></div>
+            <div class="p-card"><div class="n red">5</div><h3>White space works here</h3><p>It is not empty. It is the load-bearing wall of the composition. Please do not lean on it.</p></div>
+            <div class="p-card"><div class="n">6</div><h3>Duration: forever</h3><p>Fashion expires quarterly. A timetable set in 1959 still boards trains today. Design for the second one.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="colophon">
+      <div class="sec">
+        <div class="sec-no">03<i>/</i>03 — colophon</div>
+        <div class="sec-body">
+          <p class="colo">
+            Set in <b>Inter</b> (as Helvetica's most reasonable heir on the web) on a <b>12-column grid</b> with a
+            gutter unit that scales from 14 to 24 pixels. Palette: <b>white, near-black, one red</b> (#e30613 —
+            close to the red of the federal railways, which is not an accident). The grid overlay you can toggle
+            with <b>G</b> is the actual CSS grid used to compose every section of this page; nothing is aligned by
+            eye. Built as a single HTML file with no framework, no build step, and no apologies. — Fable 25, site 07.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>signalform · bureau for visual order · fable 25 · site 07</span>
+    <span><a href="guide/">guide — how this was made</a> &nbsp;·&nbsp; <a href="../../">⌂ fable 25</a></span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const lay = document.getElementById('gridlay');
+  const btn = document.getElementById('gbtn');
+  function toggle(){
+    const on = lay.classList.toggle('on');
+    btn.textContent = 'grid: ' + (on ? 'on' : 'off');
+    btn.setAttribute('aria-pressed', String(on));
+  }
+  btn.addEventListener('click', toggle);
+  addEventListener('keydown', e => {
+    if ((e.key === 'g' || e.key === 'G') && !e.metaKey && !e.ctrlKey && !e.altKey) toggle();
+  });
+})();
+</script>

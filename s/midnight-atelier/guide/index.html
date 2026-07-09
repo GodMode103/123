@@ -1,0 +1,57 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — MAISON MINUIT</title>
+<meta name="description" content="How Midnight Atelier was built: CSS-woven fabrics, a horizontal runway, and restraint as a technique.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230d0c0a'/%3E%3Ctext x='16' y='23' font-size='18' text-anchor='middle' fill='%23c9a962' font-family='serif'%3EM%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Cormorant+Garamond:ital@0;1&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root{--noir:#0d0c0a;--ivory:#f4efe6;--gold:#c9a962;--dim:#8a7440;--line:rgba(201,169,98,.25)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--noir);color:var(--ivory);font-family:'Jost',sans-serif;font-weight:300;line-height:1.85}
+  main{max-width:740px;margin:0 auto;padding:5rem 1.5rem}
+  .kicker{color:var(--gold);font-size:.68rem;letter-spacing:.45em;text-transform:uppercase;margin-bottom:1.2rem}
+  h1{font-family:'Italiana',serif;font-weight:400;font-size:clamp(2rem,5.5vw,3rem);letter-spacing:.08em}
+  h2{font-family:'Italiana',serif;font-weight:400;font-size:1.4rem;letter-spacing:.1em;margin:3rem 0 1rem;padding-top:2rem;border-top:1px solid var(--line);color:var(--gold)}
+  p,li{font-size:.95rem;color:rgba(244,239,230,.78)}
+  ul{padding-left:1.2rem}
+  li{margin:.5rem 0}
+  code{font-family:ui-monospace,monospace;font-size:.85em;background:rgba(201,169,98,.12);padding:.1em .4em;border-radius:3px;color:var(--gold)}
+  .pass{border-left:1px solid var(--gold);padding:.2rem 0 .2rem 1.3rem;margin:1.3rem 0}
+  .pass h3{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:1.15rem;color:var(--ivory)}
+  nav{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;margin-bottom:3rem}
+  nav a{color:rgba(244,239,230,.75);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:3px}
+  nav a:hover{color:var(--gold);border-color:var(--gold)}
+</style>
+<main>
+  <nav><a href="../">← Back to the maison</a> &nbsp;·&nbsp; <a href="../../../">⌂ Fable 25 hub</a></nav>
+  <p class="kicker">Fable 25 · Guide 06</p>
+  <h1>Maison Minuit</h1>
+  <p>A couture house whose entire collection was "never photographed" — which is the design alibi for building a fashion site with zero photography. Each of the eight looks is a textile woven from CSS gradients, lit and cropped like a garment glimpsed in a dark salon.</p>
+
+  <h2>CSS as fabric</h2>
+  <ul>
+    <li><strong>Wool crepe:</strong> a tight <code>repeating-linear-gradient</code> at 115° over a dark base — a literal twill weave at 11px pitch.</li>
+    <li><strong>Gold lamé:</strong> a <code>conic-gradient</code> anchored below the frame plus one hot radial highlight, so the light seems to rake across it.</li>
+    <li><strong>Moiré silk:</strong> <code>repeating-radial-gradient</code> rings emanating from above the crop — interference patterns without an image.</li>
+    <li><strong>The gilded cage:</strong> two perpendicular 1px repeating gradients form a thread lattice.</li>
+    <li>Every look sits under a "veil" gradient (bottom-up black) that guarantees caption legibility no matter the fabric, and scales up 6% on hover at a couture-slow 1.2s.</li>
+  </ul>
+
+  <h2>The horizontal runway</h2>
+  <ul>
+    <li><code>scroll-snap-type: x mandatory</code> with center alignment — each look presents itself, one at a time, like a model pausing.</li>
+    <li>A wheel listener converts vertical scrolling to horizontal motion <em>only while the runway can still move</em> — checked by comparing <code>scrollLeft</code> before/after, so the page never traps the user at either end.</li>
+    <li>Native touch scrolling untouched on mobile; the hint line tells desktop users the axis has rotated.</li>
+  </ul>
+
+  <h2>Typography &amp; restraint</h2>
+  <p><strong>Italiana</strong> (hairline didone, all display), <strong>Cormorant Garamond</strong> italic for whispers, <strong>Jost</strong> letter-spaced small caps for apparatus. One accent color, used at two intensities. The moonbeam behind the hero is a single 1px gradient line — the cheapest element on any site in this project, and the most load-bearing.</p>
+
+  <h2>Iteration log — three passes</h2>
+  <div class="pass"><h3>Pass 1 — Build</h3><p>Hero, eight CSS fabrics, runway with snap, philosophy, appointments grid, fixed nav.</p></div>
+  <div class="pass"><h3>Pass 2 — Fine-tooth comb</h3><p>The wheel hijack originally called <code>preventDefault()</code> unconditionally — trapping the page when the runway hit its end; now it releases at the boundaries. Look captions failed contrast on the lamé fabric — the veil gradient was strengthened to 92% black at the base. Letter-spaced centered text was optically off-center — added matching <code>text-indent</code> everywhere tracking is used.</p></div>
+  <div class="pass"><h3>Pass 3 — Complexify &amp; polish</h3><p>Added per-city appointment cells with border seams that reflow from columns to rows on mobile; runway made keyboard-focusable (<code>tabindex</code> + arrow keys scroll natively); hover state moved from opacity to border-gold so reduced-motion loses nothing meaningful; scrollbar styled thin gold. Copy tightened until every caption read like a garment label, not ad copy.</p></div>
+
+  <h2>Files</h2>
+  <p>One self-contained <code>index.html</code>. Eight dresses, zero kilobytes of imagery.</p>
+</main>

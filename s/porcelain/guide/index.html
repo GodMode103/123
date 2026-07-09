@@ -1,0 +1,52 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — Porcelain &amp; Thumb</title>
+<meta name="description" content="How the Porcelain site was built: claymorphism, squish physics, and a CSS-variable glaze system.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%23f3e7dc'/%3E%3Cpath d='M10 8h12l-2 6c3 2 3 8-4 8s-7-6-4-8z' fill='%23c96f4a'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--cream:#f3e7dc;--clay:#c96f4a;--deep:#a34f2e;--char:#4a3f38;
+    --pop:8px 8px 18px rgba(163,79,46,.18),-8px -8px 18px rgba(255,255,255,.85);
+    --dent:inset 6px 6px 12px rgba(163,79,46,.16),inset -6px -6px 12px rgba(255,255,255,.9)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--cream);color:var(--char);font-family:'Nunito',sans-serif;line-height:1.7}
+  main{max-width:740px;margin:0 auto;padding:4.5rem 1.5rem}
+  .kicker{display:inline-block;box-shadow:var(--dent);border-radius:999px;padding:.45rem 1.2rem;
+    font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--deep);margin-bottom:1.4rem}
+  h1{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(2rem,5.5vw,3.1rem);line-height:1.05}
+  h2{font-family:'Fraunces',serif;font-weight:500;font-size:1.35rem;margin:2.8rem 0 .9rem}
+  p,li{font-size:.96rem;color:#6b5d53}
+  ul{padding-left:1.2rem}
+  li{margin:.5rem 0}
+  code{font-family:ui-monospace,monospace;font-size:.85em;background:#eadbcc;padding:.12em .4em;border-radius:8px}
+  .pass{background:#fff;border-radius:22px;box-shadow:var(--pop);padding:1.2rem 1.4rem;margin:1.2rem 0}
+  .pass h3{font-family:'Fraunces',serif;font-weight:500;font-size:1.05rem;color:var(--deep)}
+  nav{margin-bottom:2.5rem;font-size:.85rem;font-weight:700}
+  nav a{color:var(--deep);text-decoration:none}
+  nav a:hover{text-decoration:underline}
+</style>
+<main>
+  <nav><a href="../">← Back to the studio</a> &nbsp;·&nbsp; <a href="../../../">⌂ Fable 25 hub</a></nav>
+  <p class="kicker">Fable 25 · Guide 05</p>
+  <h1>Porcelain &amp; Thumb — claymorphism with a spine</h1>
+  <p>A ceramics studio rendered in the material it sells: every surface reads as soft-fired clay. The challenge with claymorphism is keeping it from turning to mush — this build pairs the softness with a strict two-shadow system and copy that stays dry.</p>
+
+  <h2>The material system</h2>
+  <ul>
+    <li><strong>Two shadows only:</strong> <code>--pop</code> (raised: warm shadow + white highlight) and <code>--dent</code> (pressed: the same pair, inset). Everything on the page is one or the other — cards pop, wells and steps dent. Consistent light source, top-left, always.</li>
+    <li><strong>Squish physics:</strong> buttons scale down and translate on <code>:active</code> with a <code>cubic-bezier(.34,1.56,.64,1)</code> overshoot — the "clay gives, then springs back" feel. Hover lifts, press dents.</li>
+    <li><strong>Morphing blobs:</strong> three background shapes animate <code>border-radius</code> through organic 4-corner values over 14s — clay being kneaded in slow motion.</li>
+    <li><strong>Type pairing:</strong> Fraunces (an old-style serif with soft, thumbed terminals — the most "ceramic" typeface on Google Fonts) against round, friendly Nunito.</li>
+  </ul>
+
+  <h2>The glaze picker</h2>
+  <p>The vase is an inline SVG filled with a gradient whose stops reference <code>var(--glaze)</code> and <code>var(--glaze-hi)</code>. The five swatch buttons just swap two CSS custom properties on <code>:root</code> — no SVG manipulation, no repaint logic, five glazes for ~10 lines of JS. Swatches are real buttons with <code>aria-pressed</code> state and a visible ✓ on selection.</p>
+
+  <h2>Iteration log — three passes</h2>
+  <div class="pass"><h3>Pass 1 — Build</h3><p>Hero with plinth + vase, glaze system, collection cards, four-step process, workshop band, blobs.</p></div>
+  <div class="pass"><h3>Pass 2 — Fine-tooth comb</h3><p>Shadow values were muddy grey originally — recast both shadow colors from the clay hue (warm brown at low alpha) so depth reads as material, not smoke. Blobs sat above content and intercepted clicks: pinned to <code>z-index:0</code> + <code>pointer-events:none</code>. The charred glaze failed contrast for its ✓ mark — added text-shadow. Fixed blob overflow causing horizontal scroll at 360px.</p></div>
+  <div class="pass"><h3>Pass 3 — Complexify &amp; polish</h3><p>Added the highlight stroke on the vase (a white brush glint), drop-shadow under it tied to the glaze depth, stepped counters in the process cards (<code>counter(step)</code>), keyboard focus rings on every interactive element, and reduced-motion kills blob morphing and squish transitions. Copy pass: every price tag and card line rewritten until it sounded like a potter, not a template.</p></div>
+
+  <h2>Files</h2>
+  <p>One self-contained <code>index.html</code>; the vase is inline SVG; zero raster images.</p>
+</main>

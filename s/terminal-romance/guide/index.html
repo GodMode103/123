@@ -1,0 +1,58 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — NIGHTSHIFT.LOG</title>
+<meta name="description" content="How the Terminal Romance site was built: CRT physics in CSS, a skippable typing engine, and epistolary storytelling.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%23081008'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='%2333ff66' font-family='monospace'%3E%E2%9D%A4%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root{--phos:#33ff66;--dim:#1d9940;--tube:#050a05}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0a0a0c;color:#c9d6cc;font-family:'VT323',monospace;line-height:1.6;font-size:19px}
+  main{max-width:720px;margin:0 auto;padding:5rem 1.5rem 4rem}
+  .kicker{color:var(--phos);font-size:15px;letter-spacing:.4em;text-transform:uppercase;margin-bottom:1rem}
+  h1{font-size:clamp(1.9rem,5vw,2.7rem);color:#eaffef;font-weight:400;text-shadow:0 0 12px rgba(51,255,102,.35)}
+  h2{font-size:1.35rem;color:var(--phos);margin:2.6rem 0 .8rem;padding-top:1.6rem;border-top:1px dashed #2a3a2e;font-weight:400}
+  p,li{font-size:19px;color:#aebfb3}
+  ul{padding-left:1.2rem}
+  li{margin:.45rem 0}
+  code{background:rgba(51,255,102,.1);color:var(--phos);padding:.05em .35em;border-radius:3px}
+  .pass{border-left:2px solid var(--dim);padding:.2rem 0 .2rem 1.1rem;margin:1rem 0}
+  .pass h3{color:#eaffef;font-weight:400;font-size:1.1rem}
+  nav{font-size:16px;letter-spacing:.1em;margin-bottom:2.5rem}
+  nav a{color:#aebfb3;text-decoration:none;border-bottom:1px dotted #4a5a4e}
+  nav a:hover{color:var(--phos);border-color:var(--phos)}
+</style>
+<main>
+  <nav><a href="../">← back to the terminal</a> &nbsp;·&nbsp; <a href="../../../">⌂ fable 25 hub</a></nav>
+  <p class="kicker">Fable 25 · Guide 03</p>
+  <h1>NIGHTSHIFT.LOG — a romance in green phosphor</h1>
+  <p>The bet: a website that is a single physical object — a 1983 CRT terminal — and a story you excavate rather than scroll. The design work is split evenly between simulating the hardware and writing four letters good enough to justify the frame.</p>
+
+  <h2>CRT physics, all in CSS</h2>
+  <ul>
+    <li><strong>Scanlines:</strong> a 3px <code>repeating-linear-gradient</code> — dark 1px line, 2px gap.</li>
+    <li><strong>Aperture grille:</strong> a second repeating gradient of 1px red/green/blue tints at 2.5% opacity, perpendicular to the scanlines — the shadow-mask RGB structure of a real tube.</li>
+    <li><strong>Phosphor glow:</strong> double <code>text-shadow</code> (tight 6px halo + wide 22px bloom).</li>
+    <li><strong>Tube curvature:</strong> an elliptical radial-gradient vignette plus a diagonal glass-glare streak on one overlay.</li>
+    <li><strong>Flicker:</strong> a 4.1s keyframe animation that dips opacity for ~50ms twice per cycle — enough to feel analog, rare enough not to annoy. Disabled under <code>prefers-reduced-motion</code>.</li>
+    <li><strong>The bezel:</strong> the monitor shell is a gradient, border-radius and an engraved model number — the page has a physical prop, not a background.</li>
+  </ul>
+
+  <h2>The typing engine</h2>
+  <ul>
+    <li>Variable cadence: 14–40ms per character, ~90ms after commas, ~170ms after sentence-enders — mimicking a human transcription rather than a metronome.</li>
+    <li><strong>Skippable:</strong> any keypress or tap flushes the current letter instantly. Impatience is a valid reading speed.</li>
+    <li><strong>Accessible:</strong> the screen is <code>aria-live="polite"</code>; menu entries are real <code>&lt;button&gt;</code>s reachable by keyboard (keys 1–4 also work); reduced-motion renders all text instantly.</li>
+  </ul>
+
+  <h2>The writing</h2>
+  <p>Four letters, ~120 words each, structured as a complete arc: notice → flirtation → risk → answer. The last letter is flagged <em>never sent</em>, and the archive footnote (a 1983 change-of-address form) resolves the story in bureaucratic deadpan. Copy is doing half the design here on purpose.</p>
+
+  <h2>Iteration log — three passes</h2>
+  <div class="pass"><h3>PASS 1 — build</h3><p>Bezel/tube/screen stack, overlays, typing engine, boot sequence, four letters, menu system.</p></div>
+  <div class="pass"><h3>PASS 2 — fine-tooth comb</h3><p>Letters overflowed the tube on phones — line lengths reworked to ~58 chars and font clamped. The flicker fired every 1.5s originally: nauseating; retimed to twice per 4.1s. Menu rows were plain text; replaced with real buttons (hover highlight, focus rule, keyboard). Fixed double-open race when mashing number keys (busy flag).</p></div>
+  <div class="pass"><h3>PASS 3 — complexify &amp; polish</h3><p>Added the aperture-grille RGB layer and glass glare; punctuation-aware typing cadence; skip-on-any-input; auto-scroll pinned to the newest line; the DRAFTS letter and archive footnote added to give the story an ending worth the visit.</p></div>
+
+  <h2>Files</h2>
+  <p>One self-contained <code>index.html</code>. One font (VT323). Zero images — the monitor is drawn entirely in CSS.</p>
+</main>

@@ -1,0 +1,49 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>guide — signalform</title>
+<meta name="description" content="How Signalform was built: Swiss International Style, a live grid overlay, and one red.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23fff'/%3E%3Crect x='4' y='4' width='11' height='11' fill='%23e30613'/%3E%3Crect x='17' y='17' width='11' height='11' fill='%23111'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--k:#111;--r:#e30613;--g:#767676}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;color:var(--k);font-family:'Inter','Helvetica Neue',sans-serif;line-height:1.6}
+  main{max-width:720px;margin:0 auto;padding:4.5rem 1.5rem}
+  .kicker{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--r);margin-bottom:1rem}
+  h1{font-weight:900;font-size:clamp(2rem,5.5vw,3rem);letter-spacing:-.04em;line-height:1}
+  h2{font-weight:700;font-size:1.15rem;letter-spacing:-.01em;margin:2.8rem 0 .8rem;border-top:2px solid var(--k);padding-top:1.1rem}
+  p,li{font-size:.92rem;color:#333}
+  ul{padding-left:1.2rem}
+  li{margin:.45rem 0}
+  code{font-family:ui-monospace,monospace;font-size:.85em;background:#f1f1f1;padding:.1em .35em}
+  .pass{border-left:4px solid var(--r);padding:.3rem 0 .3rem 1rem;margin:1rem 0}
+  .pass h3{font-size:.95rem;font-weight:700}
+  nav{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2.5rem}
+  nav a{color:var(--k);text-decoration:none}
+  nav a:hover{color:var(--r)}
+</style>
+<main>
+  <nav><a href="../">← back to the bureau</a> &nbsp;·&nbsp; <a href="../../../">⌂ fable 25 hub</a></nav>
+  <p class="kicker">Fable 25 · Guide 07</p>
+  <h1>signalform — the grid, exposed</h1>
+  <p>An exercise in Swiss International Style done natively for the web: asymmetric 12-column composition, one accent red, flush-left everything, and typography as the only image. The signature move is the <strong>G key</strong> — it reveals the real CSS grid the page is composed on, turning the design system into the site's one piece of theater.</p>
+
+  <h2>Why the overlay matters</h2>
+  <p>Swiss modernism's central claim is that structure is visible even when the scaffolding isn't. The overlay makes the claim falsifiable: every element on the page genuinely sits on those 12 columns (<code>grid-column: 2/7</code> and friends), gutters bound to a fluid unit <code>--u: clamp(14px, 2vw, 24px)</code> shared by every section. Nothing is aligned by eye, and you can check.</p>
+
+  <h2>Composition notes</h2>
+  <ul>
+    <li><strong>Poster hero:</strong> three-line headline — solid, hollow (<code>-webkit-text-stroke</code>), solid-with-red — at 900 weight and −4.5% tracking, with a single red square occupying the 12th column as counterweight.</li>
+    <li><strong>Work index:</strong> tabular rows on a 10-column sub-grid; year, project, and category each own fixed columns so the ragged edges align vertically down the page. Hover reveals a red arrow — the one permitted animation, 180ms flat.</li>
+    <li><strong>Principles:</strong> a bordered 3-up card grid where two of six numerals are red — spent deliberately, as principle #2 demands.</li>
+    <li><strong>Colophon:</strong> set in two CSS columns, the oldest trick in editorial design, describing exactly how the page is made — the site self-documents.</li>
+  </ul>
+
+  <h2>Iteration log — three passes</h2>
+  <div class="pass"><h3>Pass 1 — Build</h3><p>Grid system, poster, work rows, principles, colophon, overlay + G-key toggle.</p></div>
+  <div class="pass"><h3>Pass 2 — Fine-tooth comb</h3><p>The overlay initially used <code>height:100vh</code> inside a scrolled page — columns stopped at the fold; refit as <code>position:fixed</code> full-viewport so the grid rides the scroll. Work-row hover used a transform that made text shimmer: replaced with a flat background change. Mobile poster kept the red square colliding with the wrapped headline — square hidden below 760px, headline re-clamped.</p></div>
+  <div class="pass"><h3>Pass 3 — Complexify &amp; polish</h3><p>Added the persistent grid button (bottom-right) with <code>aria-pressed</code> mirroring the G key for touch users; tabular numerals on years; keyboard modifier guard so Cmd+G/Ctrl+G don't trigger it; head-note line that sets tone in nine words. Contrast audit: grey passes AA on white at the sizes used; red is never used under 700 weight.</p></div>
+
+  <h2>Files</h2>
+  <p>One self-contained <code>index.html</code>. The grid overlay is 13 divs and 15 lines of JS.</p>
+</main>

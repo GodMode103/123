@@ -1,0 +1,227 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Paper Theater — a story in three acts</title>
+<meta name="description" content="A toy theater cut from paper. Tilt the stage, change the act, watch the light move across a very small kingdom.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23803636'/%3E%3Cpath d='M6 26 L6 12 Q16 4 26 12 L26 26 Z' fill='%23f5e9d4'/%3E%3Cpath d='M11 26 L11 16 Q16 11 21 16 L21 26 Z' fill='%23803636'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --curtain:#803636; --curtain-deep:#5e2727; --paper:#f5e9d4; --ink:#3a2e28;
+    /* act-driven scene vars */
+    --sky-a:#ffd9a0; --sky-b:#ffab73; --far:#e8b88a; --mid:#c98d5f; --near:#8a5a3b;
+    --moon:#fff3d0; --moon-glow:rgba(255,243,208,.0); --window:#7a4a2e;
+  }
+  .act-dusk{
+    --sky-a:#a56a9e; --sky-b:#e2837a; --far:#8a5a86; --mid:#6b4270; --near:#452b52;
+    --moon:#ffe9b8; --moon-glow:rgba(255,233,184,.35); --window:#ffca7a;
+  }
+  .act-night{
+    --sky-a:#1d2447; --sky-b:#3a3f70; --far:#2a2f58; --mid:#20244a; --near:#141733;
+    --moon:#f6f1de; --moon-glow:rgba(246,241,222,.5); --window:#ffd98c;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:
+      radial-gradient(120% 90% at 50% 0%, #4b3a33 0%, #2e2320 55%, #201814 100%);
+    color:var(--paper);font-family:'Karla',sans-serif;font-weight:300;line-height:1.75;
+    min-height:100vh;overflow-x:hidden;
+  }
+  ::selection{background:var(--curtain);color:var(--paper)}
+
+  header{text-align:center;padding:clamp(2.5rem,7vh,4.5rem) 1.2rem 1rem}
+  .eyebrow{font-size:.7rem;letter-spacing:.4em;text-transform:uppercase;color:#c9a982;text-indent:.4em}
+  h1{font-family:'Young Serif',serif;font-size:clamp(2rem,6vw,3.6rem);margin-top:.8rem;color:var(--paper)}
+  header .sub{color:#bfa88e;font-size:.95rem;margin-top:.6rem;font-style:italic;font-family:'Karla',sans-serif}
+
+  /* ------ the theater ------ */
+  .theater-wrap{display:grid;place-items:center;padding:2rem 1rem 1rem}
+  .theater{
+    width:min(860px,94vw);position:relative;
+  }
+  /* proscenium */
+  .proscenium{
+    position:relative;background:var(--curtain);
+    border-radius:18px 18px 10px 10px;
+    padding:clamp(1.1rem,3vw,2.2rem);
+    box-shadow:0 30px 70px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.12);
+  }
+  .proscenium::before{ /* carved arch trim */
+    content:"";position:absolute;inset:clamp(.5rem,1.4vw,1rem);
+    border:2px solid rgba(245,233,212,.28);border-radius:14px 14px 8px 8px;pointer-events:none;
+  }
+  .marquee{
+    position:absolute;top:-1rem;left:50%;transform:translateX(-50%);
+    background:var(--paper);color:var(--curtain-deep);
+    font-family:'Young Serif',serif;font-size:clamp(.7rem,1.6vw,.9rem);letter-spacing:.18em;
+    padding:.45rem 1.6rem;border-radius:999px;box-shadow:0 6px 16px rgba(0,0,0,.4);
+    white-space:nowrap;z-index:5;
+  }
+  .stage{
+    position:relative;overflow:hidden;border-radius:8px;
+    aspect-ratio:16/9;
+    background:linear-gradient(var(--sky-a), var(--sky-b));
+    transition:background 1.2s ease;
+    perspective:900px;
+  }
+  .scene{
+    position:absolute;inset:0;transform-style:preserve-3d;
+    transition:transform .25s ease-out;
+  }
+  .layer{position:absolute;left:-4%;right:-4%;bottom:-2%;pointer-events:none}
+  .layer svg{width:100%;height:auto;display:block}
+  .layer.sky-obj{left:auto;right:8%;bottom:auto;top:8%;width:clamp(60px,12%,110px)}
+  .moon-disc{
+    width:100%;aspect-ratio:1;border-radius:50%;
+    background:var(--moon);
+    box-shadow:0 0 40px 12px var(--moon-glow);
+    transition:background 1.2s ease, box-shadow 1.2s ease;
+  }
+  .l-far svg path{fill:var(--far);transition:fill 1.2s ease}
+  .l-mid svg path{fill:var(--mid);transition:fill 1.2s ease}
+  .l-near svg path{fill:var(--near);transition:fill 1.2s ease}
+  .cottage-glass{fill:var(--window);transition:fill 1.2s ease}
+  .layer{filter:drop-shadow(0 -6px 10px rgba(0,0,0,.18))}
+
+  /* curtains */
+  .curt{
+    position:absolute;top:0;bottom:0;width:12%;z-index:4;
+    background:
+      repeating-linear-gradient(90deg, var(--curtain-deep) 0 12px, var(--curtain) 12px 26px);
+    box-shadow:inset -6px 0 14px rgba(0,0,0,.35);
+  }
+  .curt.left{left:0;border-radius:0 60% 60% 0/0 20% 20% 0}
+  .curt.right{right:0;border-radius:60% 0 0 60%/20% 0 0 20%;box-shadow:inset 6px 0 14px rgba(0,0,0,.35)}
+  @media(max-width:560px){
+    .stage{aspect-ratio:4/3}
+    .curt{width:8%}
+  }
+
+  /* act rail */
+  .acts{display:flex;justify-content:center;gap:.8rem;margin-top:1.4rem;flex-wrap:wrap}
+  .act-btn{
+    font-family:'Karla',sans-serif;font-weight:600;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;
+    background:transparent;color:#cbb494;border:1px solid rgba(245,233,212,.35);
+    padding:.75rem 1.6rem;border-radius:999px;cursor:pointer;transition:all .3s;
+  }
+  .act-btn:hover{border-color:var(--paper);color:var(--paper)}
+  .act-btn[aria-pressed="true"]{background:var(--paper);color:var(--curtain-deep);border-color:var(--paper)}
+  .act-btn:focus-visible{outline:2px solid var(--paper);outline-offset:3px}
+
+  /* story */
+  .story{max-width:600px;margin:0 auto;padding:2.2rem 1.4rem 3rem;text-align:center}
+  .story h2{font-family:'Young Serif',serif;font-size:clamp(1.3rem,3.2vw,1.8rem);color:var(--paper)}
+  .story p{color:#cbb8a0;margin-top:.9rem;font-size:1rem}
+  .story .hint{font-size:.75rem;color:#8f7c66;margin-top:1.6rem;letter-spacing:.1em;font-style:italic}
+
+  footer{
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;
+    max-width:900px;margin:0 auto;padding:1.6rem 1.4rem 2.6rem;
+    font-size:.75rem;letter-spacing:.14em;color:#8f7c66;
+  }
+  footer a{color:#cbb494;text-decoration:none;border-bottom:1px dotted #8f7c66;padding-bottom:2px}
+  footer a:hover{color:var(--paper);border-color:var(--paper)}
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{transition-duration:.01ms!important}
+    .scene{transition:none}
+  }
+</style>
+
+<header>
+  <p class="eyebrow">A pocket theater · cut entirely from paper</p>
+  <h1>The Smallest Kingdom</h1>
+  <p class="sub">Move your pointer across the stage — the scenery is deeper than it looks.</p>
+</header>
+
+<div class="theater-wrap">
+  <div class="theater">
+    <div class="proscenium">
+      <div class="marquee" id="marquee">ACT I — MORNING</div>
+      <div class="stage" id="stage">
+        <div class="scene" id="scene">
+          <div class="layer sky-obj" data-z="10" style="transform:translateZ(10px)">
+            <div class="moon-disc"></div>
+          </div>
+          <div class="layer l-far" data-z="20" style="transform:translateZ(20px)">
+            <svg viewBox="0 0 800 180" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M0 180 L0 120 Q90 40 200 96 Q280 130 360 76 Q460 14 560 84 Q660 130 800 70 L800 180 Z"/>
+            </svg>
+          </div>
+          <div class="layer l-mid" data-z="45" style="transform:translateZ(45px)">
+            <svg viewBox="0 0 800 150" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M0 150 L0 96 Q120 60 210 92 L210 70 L222 46 L234 70 L234 86 Q330 58 430 88 Q560 118 640 78 Q720 46 800 84 L800 150 Z"/>
+            </svg>
+          </div>
+          <div class="layer l-near" data-z="80" style="transform:translateZ(80px)">
+            <svg viewBox="0 0 800 130" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M0 130 L0 84 Q60 66 130 78 L150 78 L150 50 L196 50 L196 34 L173 16 L150 34 L150 50 L196 50 L196 78 Q300 60 420 86 Q560 112 680 72 Q740 56 800 66 L800 130 Z"/>
+              <rect class="cottage-glass" x="160" y="56" width="10" height="12" rx="1.5"/>
+              <rect class="cottage-glass" x="178" y="56" width="10" height="12" rx="1.5"/>
+            </svg>
+          </div>
+        </div>
+        <div class="curt left" aria-hidden="true"></div>
+        <div class="curt right" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="acts" role="group" aria-label="Choose an act">
+      <button class="act-btn" aria-pressed="true"  data-act="" data-title="ACT I — MORNING">Act I · Morning</button>
+      <button class="act-btn" aria-pressed="false" data-act="act-dusk" data-title="ACT II — DUSK">Act II · Dusk</button>
+      <button class="act-btn" aria-pressed="false" data-act="act-night" data-title="ACT III — NIGHT">Act III · Night</button>
+    </div>
+  </div>
+</div>
+
+<section class="story">
+  <h2 id="story-title">In which the kingdom wakes</h2>
+  <p id="story-text">The kingdom was four hills, one cottage, and a sun that rose on schedule out of sheer politeness. Its entire population — whoever is holding this page — surveyed the realm each morning and found it adequate, which in small kingdoms is the highest possible praise.</p>
+  <p class="hint">Change the act to move the light. The paper remembers nothing between shows.</p>
+</section>
+
+<footer>
+  <span>THE PAPER THEATER · FABLE 25 · SITE 10</span>
+  <span><a href="guide/">Guide — how this was made</a> &nbsp;·&nbsp; <a href="../../">⌂ Fable 25</a></span>
+</footer>
+
+<script>
+(() => {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stage = document.getElementById('stage');
+  const scene = document.getElementById('scene');
+  const marquee = document.getElementById('marquee');
+  const title = document.getElementById('story-title');
+  const text = document.getElementById('story-text');
+
+  /* pointer tilt */
+  if (!reduced){
+    stage.addEventListener('pointermove', e => {
+      const r = stage.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5;
+      const y = (e.clientY - r.top) / r.height - .5;
+      scene.style.transform = `rotateY(${x*7}deg) rotateX(${-y*5}deg)`;
+    });
+    stage.addEventListener('pointerleave', () => { scene.style.transform = ''; });
+  }
+
+  const STORIES = {
+    '': ['In which the kingdom wakes',
+      'The kingdom was four hills, one cottage, and a sun that rose on schedule out of sheer politeness. Its entire population — whoever is holding this page — surveyed the realm each morning and found it adequate, which in small kingdoms is the highest possible praise.'],
+    'act-dusk': ['In which the light grows honest',
+      'At dusk the hills traded their gold for violet and the cottage lit its two windows — one for supper, one for reading. Nothing happened at this hour, ever, and the kingdom had long ago decided this was not a flaw but the entire point.'],
+    'act-night': ['In which the moon takes over',
+      'Night ran the kingdom gently. The moon, full-time employee, kept the hills from wandering off, and the windows glowed on so the dark would have something to be dark around. Somewhere in the audience, a giant turned the page — and morning was rehearsing already.']
+  };
+
+  document.querySelectorAll('.act-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.act-btn').forEach(b => b.setAttribute('aria-pressed','false'));
+      btn.setAttribute('aria-pressed','true');
+      document.documentElement.className = btn.dataset.act;
+      marquee.textContent = btn.dataset.title;
+      const [t, s] = STORIES[btn.dataset.act];
+      title.textContent = t; text.textContent = s;
+    });
+  });
+})();
+</script>
