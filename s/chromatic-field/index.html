@@ -1,0 +1,259 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chromatic Field — A Generative Gallery</title>
+<meta name="description" content="A gallery of one artwork that never repeats. Flow-field paintings computed in your browser — regenerate, recolor, keep the one you love.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23fafaf7'/%3E%3Cpath d='M6 22 Q 12 8 18 16 T 28 12' stroke='%23c94f38' stroke-width='3' fill='none'/%3E%3Cpath d='M4 26 Q 14 14 20 20 T 30 18' stroke='%232b5f8a' stroke-width='2' fill='none'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;1,300&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--wall:#fafaf7;--ink:#22211f;--mute:#8a8781;--line:#e4e2dc}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--wall);color:var(--ink);
+    font-family:'Inter',sans-serif;line-height:1.6;
+    min-height:100vh;display:flex;flex-direction:column;
+  }
+  ::selection{background:var(--ink);color:var(--wall)}
+
+  header{
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.6rem;
+    padding:1.6rem clamp(1.2rem,4vw,3rem);border-bottom:1px solid var(--line);
+  }
+  header .name{font-family:'Spectral',serif;font-size:1.25rem;letter-spacing:.02em}
+  header .name em{font-style:italic;color:var(--mute)}
+  header nav{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase}
+  header nav a{color:var(--mute);text-decoration:none;margin-left:1.6rem}
+  header nav a:hover{color:var(--ink)}
+
+  .room{
+    flex:1;display:grid;grid-template-columns:1fr minmax(300px,380px);
+    gap:clamp(1.5rem,4vw,4rem);align-items:center;
+    padding:clamp(1.5rem,4vw,4rem) clamp(1.2rem,4vw,3rem);
+    max-width:1280px;margin:0 auto;width:100%;
+  }
+  @media(max-width:900px){.room{grid-template-columns:1fr}}
+
+  .frame-wrap{display:grid;place-items:center}
+  .frame{
+    background:#fff;padding:clamp(14px,2.2vw,26px);
+    box-shadow:0 1px 2px rgba(0,0,0,.06), 0 24px 60px -18px rgba(34,33,31,.28);
+    width:100%;max-width:640px;
+  }
+  .frame canvas{width:100%;height:auto;display:block;background:#fdfdfb}
+
+  .label h1{font-family:'Spectral',serif;font-weight:400;font-size:clamp(1.6rem,3.2vw,2.3rem);line-height:1.15}
+  .label h1 em{font-style:italic}
+  .label .meta{margin-top:1.1rem;font-size:.8rem;color:var(--mute);line-height:1.9}
+  .label .meta b{color:var(--ink);font-weight:500}
+  .label .desc{font-family:'Spectral',serif;font-weight:300;font-size:1rem;margin-top:1.4rem;max-width:38ch;color:#4c4a45}
+
+  .controls{margin-top:2rem;display:flex;flex-direction:column;gap:1rem}
+  .ctl-row{display:flex;gap:.7rem;flex-wrap:wrap}
+  button{
+    font-family:'Inter',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+    padding:.85rem 1.5rem;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:var(--wall);
+    transition:background .2s,color .2s;
+  }
+  button.ghost{background:transparent;color:var(--ink)}
+  button:hover{background:#000;color:#fff}
+  button.ghost:hover{background:var(--ink);color:var(--wall)}
+  button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+  .palettes{display:flex;gap:.55rem;flex-wrap:wrap}
+  .pal{
+    display:flex;border:1px solid var(--line);cursor:pointer;padding:0;background:none;height:30px;overflow:hidden;
+  }
+  .pal span{width:22px;height:100%;display:block}
+  .pal[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:2px}
+  .hint{font-size:.72rem;color:var(--mute);letter-spacing:.05em}
+
+  footer{
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;
+    padding:1.5rem clamp(1.2rem,4vw,3rem);border-top:1px solid var(--line);
+    font-size:.72rem;letter-spacing:.1em;color:var(--mute);
+  }
+  footer a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
+  footer a:hover{border-color:var(--ink)}
+</style>
+
+<header>
+  <div class="name">Chromatic Field <em>— a gallery of one, forever</em></div>
+  <nav><a href="guide/">Guide</a><a href="../../">⌂ Fable 25</a></nav>
+</header>
+
+<main class="room">
+  <div class="frame-wrap">
+    <div class="frame">
+      <canvas id="art" width="1200" height="1500" role="img" aria-label="Generative flow-field painting. Use the regenerate button for a new composition."></canvas>
+    </div>
+  </div>
+
+  <aside class="label">
+    <h1><em id="title-word">Meander</em>, No. <span id="seed-no">—</span></h1>
+    <div class="meta">
+      <b id="pal-name">Kiln</b> palette · flow-field ink on virtual cotton rag<br>
+      Edition of 1 — this exact painting has never existed before<br>
+      <span id="strokes">—</span> strokes · computed in your browser
+    </div>
+    <p class="desc">Thousands of particles wander a hidden vector field, each dragging a thread of ink. The field is seeded by the number above: same seed, same painting; new seed, new world. The gallery never hangs the same work twice.</p>
+
+    <div class="controls">
+      <div class="ctl-row">
+        <button id="regen">↻ Regenerate</button>
+        <button id="save" class="ghost">↓ Keep this one</button>
+      </div>
+      <div class="palettes" role="group" aria-label="Palette selection" id="pals"></div>
+      <span class="hint">R regenerates · each palette rehangs the room</span>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <span>CHROMATIC FIELD · FABLE 25 · SITE 08</span>
+  <span><a href="guide/">Guide — how this was made</a> &nbsp;·&nbsp; <a href="../../">⌂ Fable 25</a></span>
+</footer>
+
+<script>
+(() => {
+  const canvas = document.getElementById('art');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* seeded RNG */
+  function mulberry32(a){
+    return function(){
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  const PALETTES = [
+    {name:'Kiln',      bg:'#f6f1e7', inks:['#c94f38','#2b4162','#d9a566','#3f3d3a','#7d8c65']},
+    {name:'Lagoon',    bg:'#eef4f2', inks:['#0f5257','#4bb3a7','#dfa06e','#233d4d','#94b0a4']},
+    {name:'Pressed Flowers', bg:'#f7f2ee', inks:['#9a4f6e','#c98a8a','#5c6d51','#e0b94f','#5a4a68']},
+    {name:'Graphite &amp; Coal', bg:'#f2f2f0', inks:['#242424','#5c5c5c','#8f8f8f','#bcbcbc','#3a3a3a']},
+    {name:'Ember Storm',bg:'#f2ede4', inks:['#8c2f1b','#d96b2b','#e8b04b','#40342c','#a8532e']},
+  ];
+  const TITLES = ['Meander','Undertow','Cartography of Wind','Slow Argument','Confluence','Migration','Second Weather','The Long Answer'];
+
+  let seed, rng, pal = 0, raf = 0, strokeCount = 0;
+
+  function noiseFactory(r){
+    /* value-noise grid from the seeded rng */
+    const g = new Float32Array(4096);
+    for (let i = 0; i < 4096; i++) g[i] = r() * 2 - 1;
+    const idx = (x, y) => g[((y & 63) << 6 | (x & 63))];
+    return (x, y) => {
+      const xi = Math.floor(x), yi = Math.floor(y);
+      const xf = x - xi, yf = y - yi;
+      const u = xf*xf*(3-2*xf), v = yf*yf*(3-2*yf);
+      return idx(xi,yi)*(1-u)*(1-v) + idx(xi+1,yi)*u*(1-v)
+           + idx(xi,yi+1)*(1-u)*v + idx(xi+1,yi+1)*u*v;
+    };
+  }
+
+  function generate(newSeed){
+    cancelAnimationFrame(raf);
+    seed = newSeed ?? Math.floor(Math.random() * 90000) + 10000;
+    rng = mulberry32(seed);
+    const noise = noiseFactory(rng);
+    const P = PALETTES[pal];
+
+    /* paper */
+    ctx.fillStyle = P.bg;
+    ctx.fillRect(0, 0, W, H);
+    /* paper grain */
+    for (let i = 0; i < 2600; i++){
+      ctx.fillStyle = `rgba(0,0,0,${0.012 + rng()*0.018})`;
+      ctx.fillRect(rng()*W, rng()*H, 1.2, 1.2);
+    }
+
+    const scale = 0.0016 + rng() * 0.0022;     /* field zoom */
+    const curls = 1.5 + rng() * 3.5;           /* angle multiplier */
+    const nParticles = 420 + Math.floor(rng() * 260);
+    const steps = 130;
+    strokeCount = nParticles;
+
+    /* particles with per-particle ink + weight */
+    const parts = [];
+    for (let i = 0; i < nParticles; i++){
+      parts.push({
+        x: rng()*W, y: rng()*H,
+        ink: P.inks[Math.floor(rng()*P.inks.length)],
+        w: 0.5 + Math.pow(rng(), 2.2) * 5.5,
+        a: 0.05 + rng()*0.16,
+        life: 0
+      });
+    }
+
+    document.getElementById('seed-no').textContent = seed;
+    document.getElementById('pal-name').textContent = P.name.replace('&amp;','&');
+    document.getElementById('strokes').textContent = nParticles.toLocaleString();
+    document.getElementById('title-word').textContent = TITLES[seed % TITLES.length];
+
+    let step = 0;
+    function paintChunk(){
+      const perFrame = reduced ? steps : 4;       /* reduced motion: near-instant */
+      for (let s = 0; s < perFrame && step < steps; s++, step++){
+        for (const p of parts){
+          const ang = noise(p.x*scale*63, p.y*scale*63) * Math.PI * curls;
+          const nx = p.x + Math.cos(ang) * 3.1;
+          const ny = p.y + Math.sin(ang) * 3.1;
+          ctx.strokeStyle = p.ink;
+          ctx.globalAlpha = p.a * (1 - step/steps*0.4);
+          ctx.lineWidth = p.w * (1 - step/steps*0.55);
+          ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(nx, ny); ctx.stroke();
+          p.x = nx; p.y = ny;
+          /* wrap wanderers back into the frame */
+          if (p.x < -20) p.x = W+18; if (p.x > W+20) p.x = -18;
+          if (p.y < -20) p.y = H+18; if (p.y > H+20) p.y = -18;
+        }
+      }
+      ctx.globalAlpha = 1;
+      if (step < steps) raf = requestAnimationFrame(paintChunk);
+      else margin();
+    }
+    function margin(){
+      /* clean gallery margin bite */
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = P.bg; ctx.lineWidth = 90;
+      ctx.strokeRect(-45, -45, W+90, H+90);
+      ctx.strokeStyle = 'rgba(34,33,31,.35)'; ctx.lineWidth = 2;
+      ctx.strokeRect(52, 52, W-104, H-104);
+    }
+    paintChunk();
+  }
+
+  /* palette buttons */
+  const palBox = document.getElementById('pals');
+  PALETTES.forEach((P, i) => {
+    const b = document.createElement('button');
+    b.className = 'pal';
+    b.setAttribute('aria-pressed', String(i === 0));
+    b.setAttribute('aria-label', 'Palette: ' + P.name.replace('&amp;','&'));
+    b.innerHTML = P.inks.map(c => `<span style="background:${c}"></span>`).join('');
+    b.addEventListener('click', () => {
+      pal = i;
+      palBox.querySelectorAll('.pal').forEach(x => x.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');
+      generate(seed);          /* same seed, rehung in new inks */
+    });
+    palBox.appendChild(b);
+  });
+
+  document.getElementById('regen').addEventListener('click', () => generate());
+  addEventListener('keydown', e => {
+    if ((e.key === 'r' || e.key === 'R') && !e.metaKey && !e.ctrlKey) generate();
+  });
+  document.getElementById('save').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.download = `chromatic-field-${seed}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  });
+
+  generate();
+})();
+</script>

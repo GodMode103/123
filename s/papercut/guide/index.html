@@ -1,0 +1,51 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — The Paper Theater</title>
+<meta name="description" content="How Papercut was built: CSS 3D layered scenery, act-based relighting via custom properties, and a story that fits on a stage.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23803636'/%3E%3Cpath d='M6 26 L6 12 Q16 4 26 12 L26 26 Z' fill='%23f5e9d4'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--curtain:#803636;--paper:#f5e9d4;--dim:#bfa88e}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:radial-gradient(120% 90% at 50% 0%,#4b3a33 0%,#2e2320 55%,#201814 100%);
+    color:var(--paper);font-family:'Karla',sans-serif;font-weight:300;line-height:1.75;min-height:100vh}
+  main{max-width:720px;margin:0 auto;padding:4.5rem 1.5rem}
+  .kicker{font-size:.68rem;letter-spacing:.4em;text-transform:uppercase;color:#c9a982;margin-bottom:1rem}
+  h1{font-family:'Young Serif',serif;font-size:clamp(1.9rem,5vw,2.7rem)}
+  h2{font-family:'Young Serif',serif;font-size:1.25rem;margin:2.8rem 0 .9rem;padding-top:1.6rem;border-top:1px solid rgba(245,233,212,.2);color:var(--paper)}
+  p,li{font-size:.94rem;color:var(--dim)}
+  ul{padding-left:1.2rem}
+  li{margin:.5rem 0}
+  code{font-family:ui-monospace,monospace;font-size:.85em;background:rgba(245,233,212,.12);padding:.1em .4em;border-radius:4px;color:#e8d9be}
+  .pass{border-left:2px solid var(--curtain);padding:.2rem 0 .2rem 1.2rem;margin:1.2rem 0}
+  .pass h3{font-family:'Young Serif',serif;font-size:1rem;color:var(--paper)}
+  nav{font-size:.78rem;letter-spacing:.12em;margin-bottom:2.5rem}
+  nav a{color:#cbb494;text-decoration:none;border-bottom:1px dotted #8f7c66;padding-bottom:2px}
+  nav a:hover{color:var(--paper);border-color:var(--paper)}
+</style>
+<main>
+  <nav><a href="../">← Back to the theater</a> &nbsp;·&nbsp; <a href="../../../">⌂ Fable 25 hub</a></nav>
+  <p class="kicker">Fable 25 · Guide 10</p>
+  <h1>The Paper Theater</h1>
+  <p>A Victorian toy theater built from CSS: a proscenium arch, striped curtains, and a stage whose scenery is four physical layers of "paper" arranged in real 3D space. One story, three acts, and the whole kingdom relights when the act changes.</p>
+
+  <h2>Real depth, not fake depth</h2>
+  <ul>
+    <li>The stage is a <code>perspective: 900px</code> container; each scenery layer sits at an actual <code>translateZ</code> (10, 20, 45, 80px). Pointer movement rotates the parent scene a few degrees, and parallax emerges from geometry — no per-layer math, no JS positions. The browser's projection does the work.</li>
+    <li>Layers are hand-drawn SVG silhouettes (hills, pines, a cottage with two windows) stretched with <code>preserveAspectRatio="none"</code> and given paper thickness by a <code>drop-shadow</code> filter that reads as cut edges.</li>
+  </ul>
+
+  <h2>Relighting with custom properties</h2>
+  <p>Every scene color — two sky stops, three paper layers, the moon, its glow, the cottage windows — is a CSS variable. The three act buttons swap a single class on <code>&lt;html&gt;</code>, and 1.2s transitions carry the whole set: morning gold → dusk violet → indigo night. The cottage windows go dark-to-lit because their <code>fill</code> is also a variable. Total relighting logic in JS: one line.</p>
+
+  <h2>The writing</h2>
+  <p>Three paragraphs, one per act, in storybook deadpan ("a sun that rose on schedule out of sheer politeness"). The final act breaks the fourth wall — "somewhere in the audience, a giant turned the page" — because a toy theater's audience is always a giant.</p>
+
+  <h2>Iteration log — three passes</h2>
+  <div class="pass"><h3>Pass 1 — Build</h3><p>Proscenium, curtains, four Z-layers, tilt, act switcher, three story beats.</p></div>
+  <div class="pass"><h3>Pass 2 — Fine-tooth comb</h3><p>Removed an invalid CSS declaration that had slipped into the header rules. Layers originally clipped at stage edges when tilted — extended them to −4% overdraw. Curtain stripes were flat: added inner shadowing and scalloped border-radius so they hang. Moon glow was on in daylight (wrong) — glow alpha is now itself a variable, zero in Act I.</p></div>
+  <div class="pass"><h3>Pass 3 — Complexify &amp; polish</h3><p>Marquee plate above the arch tracks the current act; buttons are proper <code>aria-pressed</code> toggles with focus rings; tilt disabled under reduced motion while act transitions collapse to instant cuts (a slide projector instead of a sunset — still legible). Windows given rounded corners so they read as paper cutouts, not pixels.</p></div>
+
+  <h2>Files</h2>
+  <p>One self-contained <code>index.html</code>. The scenery is ~40 SVG path points total.</p>
+</main>

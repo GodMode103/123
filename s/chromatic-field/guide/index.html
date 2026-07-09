@@ -1,0 +1,53 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — Chromatic Field</title>
+<meta name="description" content="How Chromatic Field works: seeded flow-field painting, curated palettes, and progressive rendering.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23fafaf7'/%3E%3Cpath d='M6 22 Q 12 8 18 16 T 28 12' stroke='%23c94f38' stroke-width='3' fill='none'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;1,300&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--wall:#fafaf7;--ink:#22211f;--mute:#8a8781;--line:#e4e2dc}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--wall);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.7}
+  main{max-width:720px;margin:0 auto;padding:4.5rem 1.5rem}
+  .kicker{font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);margin-bottom:1rem}
+  h1{font-family:'Spectral',serif;font-weight:400;font-size:clamp(1.9rem,5vw,2.8rem);line-height:1.15}
+  h1 em{font-style:italic}
+  h2{font-family:'Spectral',serif;font-weight:400;font-size:1.35rem;margin:2.8rem 0 .9rem;border-top:1px solid var(--line);padding-top:1.6rem}
+  p,li{font-size:.93rem;color:#4c4a45}
+  ul{padding-left:1.2rem}
+  li{margin:.5rem 0}
+  code{font-family:ui-monospace,monospace;font-size:.85em;background:#efede7;padding:.1em .4em;border-radius:3px}
+  .pass{border-left:2px solid var(--ink);padding:.2rem 0 .2rem 1.2rem;margin:1.2rem 0}
+  .pass h3{font-family:'Spectral',serif;font-weight:400;font-size:1.05rem}
+  nav{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2.5rem}
+  nav a{color:var(--mute);text-decoration:none}
+  nav a:hover{color:var(--ink)}
+</style>
+<main>
+  <nav><a href="../">← Back to the gallery</a> &nbsp;·&nbsp; <a href="../../../">⌂ Fable 25 hub</a></nav>
+  <p class="kicker">Fable 25 · Guide 08</p>
+  <h1>Chromatic Field — <em>a gallery of one, forever</em></h1>
+  <p>A generative-art gallery framed as a white cube with a single wall. The artwork is a flow-field painting computed live: visitors regenerate it, rehang it in another palette, or download the one composition that will never occur again. The interface borrows museum conventions — wall label, edition line, serif italics — to treat browser output as an object worth keeping.</p>
+
+  <h2>The algorithm</h2>
+  <ul>
+    <li><strong>Seeded determinism:</strong> a five-digit seed feeds <code>mulberry32</code>; every random decision — field zoom, curl intensity, particle count, ink assignment, stroke weights — flows from it. Same seed + palette always reproduces the identical painting, which is what makes the edition line honest.</li>
+    <li><strong>The field:</strong> seeded value noise sampled at each particle's position yields an angle (scaled by a per-seed "curl" factor of 1.5–5). Particles step 3.1px along it, 130 times, dragging round-capped strokes whose width and alpha decay over the walk — strokes taper like real ink running dry.</li>
+    <li><strong>Weight distribution:</strong> stroke widths follow <code>pow(rng(), 2.2)</code> — many hairlines, few heavy ropes — the imbalance that makes it read as composition instead of noise.</li>
+    <li><strong>Paper:</strong> 2,600 grain flecks under the painting, and a "margin bite" pass at the end: a thick frame-colored stroke that crops wanderers, plus a thin keyline.</li>
+  </ul>
+
+  <h2>Progressive rendering</h2>
+  <p>The painting draws in ~33 chunks of 4 steps per animation frame, so visitors watch it self-assemble in about five seconds — the gallery's only spectacle. Under <code>prefers-reduced-motion</code> all 130 steps run in one frame: the finished work simply appears.</p>
+
+  <h2>Curation, not configuration</h2>
+  <p>Five fixed palettes (Kiln, Lagoon, Pressed Flowers, Graphite &amp; Coal, Ember Storm) rather than a color picker — the difference between a gallery and a paint store. Switching palettes keeps the seed, so you can see the same composition re-inked. Titles are drawn from a fixed list by <code>seed % titles.length</code>, which means the title genuinely belongs to that painting.</p>
+
+  <h2>Iteration log — three passes</h2>
+  <div class="pass"><h3>Pass 1 — Build</h3><p>Flow-field engine, seeded RNG, five palettes, frame + wall label, regenerate/save controls.</p></div>
+  <div class="pass"><h3>Pass 2 — Fine-tooth comb</h3><p>Early fields produced parallel combing (scale too uniform): per-seed curl multiplier added. Particles escaping the canvas left blank corners: wraparound margins added at ±20px. Palette swap previously regenerated a new seed — wrong; it now rehangs the same seed. Save filename now embeds the seed so downloads are reproducible.</p></div>
+  <div class="pass"><h3>Pass 3 — Complexify &amp; polish</h3><p>Paper grain + margin-bite finishing pass; stroke alpha decay tied to step count; palette buttons became real toggles with <code>aria-pressed</code> and visible focus; R-key shortcut with modifier guard; label text (strokes, palette, title) updates live; reduced-motion instant render; canvas capped at 1200×1500 for crisp PNG export without tanking mobile GPUs.</p></div>
+
+  <h2>Files</h2>
+  <p>One self-contained <code>index.html</code>. The entire painting engine is ~120 lines.</p>
+</main>
